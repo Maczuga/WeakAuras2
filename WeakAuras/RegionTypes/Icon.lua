@@ -2,11 +2,8 @@ if not WeakAuras.IsCorrectVersion() then return end
 local AddonName, Private = ...
 
 local SharedMedia = LibStub("LibSharedMedia-3.0");
+local LBF = nil
 local L = WeakAuras.L
-local MSQ, MSQ_Version = LibStub("Masque", true);
-if MSQ then
-  MSQ:AddType("WA_Aura", {"Icon", "Cooldown"})
-end
 
 -- WoW API
 local _G = _G
@@ -116,8 +113,8 @@ end
 local function GetTexCoord(region, texWidth, aspectRatio)
   region.currentCoord = region.currentCoord or {}
   local usesMasque = false
-  if region.MSQGroup then
-    local db = region.MSQGroup.db
+  if region.LBFGroup then
+    local db = region.LBFGroup.db
     if db and not db.Disabled then
       usesMasque = true
       region.currentCoord[1], region.currentCoord[2], region.currentCoord[3], region.currentCoord[4], region.currentCoord[5], region.currentCoord[6], region.currentCoord[7], region.currentCoord[8] = region.icon:GetTexCoord()
@@ -191,7 +188,7 @@ local function create(parent, data)
     local iconWidth
     local iconHeight
 
-    if MSQ then
+    if LBF then
       iconWidth = region.button:GetWidth()
       iconHeight = region.button:GetHeight()
     else
@@ -208,7 +205,7 @@ local function create(parent, data)
   end
 
   local button
-  if MSQ then
+  if LBF then
     button = CreateFrame("Button", nil, region)
     button.data = data
     region.button = button;
@@ -220,7 +217,7 @@ local function create(parent, data)
   local icon = region:CreateTexture(nil, "BACKGROUND");
   -- icon:SetSnapToPixelGrid(false)
   -- icon:SetTexelSnappingBias(0)
-  if MSQ then
+  if LBF then
     icon:SetAllPoints(button);
     button:SetScript("OnSizeChanged", region.UpdateInnerOuterSize);
   else
@@ -283,13 +280,13 @@ local function modify(parent, region, data)
   region.iconSource = data.iconSource
   region.displayIcon = data.displayIcon
 
-  if MSQ then
+  if LBF then
     local masqueId = data.id:lower():gsub(" ", "_");
     if region.masqueId ~= masqueId then
       region.masqueId = masqueId
-      region.MSQGroup = MSQ:Group("WeakAuras", region.masqueId, data.uid);
-      region.MSQGroup:SetName(data.id)
-      region.MSQGroup:AddButton(button, {Icon = icon, Cooldown = cooldown}, "WA_Aura", true);
+      region.LBFGroup = LBF:Group("WeakAuras", region.masqueId, data.uid);
+      region.LBFGroup:SetName(data.id)
+      region.LBFGroup:AddButton(button, {Icon = icon, Cooldown = cooldown}, "WA_Aura", true);
       button.data = data
     end
   end
@@ -299,7 +296,7 @@ local function modify(parent, region, data)
     local height = region.height * math.abs(region.scaley);
     region:SetWidth(width);
     region:SetHeight(height);
-    if MSQ then
+    if LBF then
       button:SetWidth(width);
       button:SetHeight(height);
       button:SetAllPoints();
@@ -326,9 +323,9 @@ local function modify(parent, region, data)
       end
     end
 
-    if region.MSQGroup then
-      region.MSQGroup:RemoveButton(button)
-      region.MSQGroup:AddButton(button, {Icon = icon, Cooldown = cooldown}, "WA_Aura", true)
+    if region.LBFGroup then
+      region.LBFGroup:RemoveButton(button)
+      region.LBFGroup:AddButton(button, {Icon = icon, Cooldown = cooldown}, "WA_Aura", true)
     end
 
     local ulx, uly, llx, lly, urx, ury, lrx, lry = GetTexCoord(region, texWidth, aspectRatio)
@@ -402,7 +399,7 @@ local function modify(parent, region, data)
       a = a or 1;
     end
     icon:SetVertexColor(r or region.color_r, g or region.color_g, b or region.color_b, a or region.color_a);
-    if MSQ then
+    if LBF then
       region.button:SetAlpha(a or region.color_a or 1);
     end
   end
