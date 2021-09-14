@@ -1,4 +1,4 @@
-## Interface: 50400
+## Interface: 30300
 ## Title: WeakAuras Archive
 ## Author: The WeakAuras Team
 ## LoadOnDemand: 1

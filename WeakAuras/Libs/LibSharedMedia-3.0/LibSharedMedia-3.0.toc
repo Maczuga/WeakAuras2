@@ -1,4 +1,4 @@
-## Interface: 50400
+## Interface: 30300
 ## LoadOnDemand: 1
 ## X-Curse-Packaged-Version: r87
 ## X-Curse-Project-Name: LibSharedMedia-3.0

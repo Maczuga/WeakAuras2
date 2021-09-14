@@ -1,4 +1,4 @@
-## Interface: 50400
+## Interface: 30300
 ## Title: Lib: Retail
 ## Notes: Ports many functions from retail WoW API
 ## Author: Maczuga
