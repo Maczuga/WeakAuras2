@@ -111,50 +111,265 @@ end
 local encounter_list = ""
 local zoneId_list = ""
 function Private.InitializeEncounterAndZoneLists()
-  if true then
-    return
-  end
-
   if encounter_list ~= "" then
     return
   end
 
-  EJ_SelectTier(EJ_GetNumTiers())
-
-  for _, inRaid in ipairs({false, true}) do
-    local instance_index = 1
-    local instance_id = EJ_GetInstanceByIndex(instance_index, true)
-    local title = inRaid and L["Raids"] or L["Dungeons"]
-    zoneId_list = ("%s|cffffd200%s|r\n"):format(zoneId_list, title)
-
-    while instance_id do
-      EJ_SelectInstance(instance_id)
-      local instance_name, _, _, _, _, dungeonAreaMapID = EJ_GetInstanceInfo(instance_id)
-      local ej_index = 1
-      local boss, _, encounter_id  = EJ_GetEncounterInfoByIndex(ej_index)
-
-      zoneId_list = ("%s%s: %d\n"):format(zoneId_list, instance_name, dungeonAreaMapID)
-
-      -- Encounter ids
-      if inRaid then
-        while boss do
-          if encounter_id then
-            if instance_name then
-              encounter_list = ("%s|cffffd200%s|r\n"):format(encounter_list, instance_name)
-              instance_name = nil -- Only add it once per section
-            end
-            encounter_list = ("%s%s: %d\n"):format(encounter_list, boss, encounter_id)
-          end
-          ej_index = ej_index + 1
-          boss, _, encounter_id = EJ_GetEncounterInfoByIndex(ej_index, instance_id)
+  if WeakAuras.IsClassic() then
+    local classic_raids = {
+      {
+        L["Black Wing Lair"],
+        {
+            { L["Razorgore the Untamed"], 610 },
+            { L["Vaelastrasz the Corrupt"], 611 },
+            { L["Broodlord Lashlayer"], 612 },
+            { L["Firemaw"], 613 },
+            { L["Ebonroc"], 614 },
+            { L["Flamegor"], 615 },
+            { L["Chromaggus"], 616 },
+            { L["Nefarian"], 617 }
+        }
+      },
+      {
+        L["Molten Core"],
+        {
+          { L["Lucifron"], 663 },
+          { L["Magmadar"], 664 },
+          { L["Gehennas"], 665 },
+          { L["Garr"], 666 },
+          { L["Shazzrah"], 667 },
+          { L["Baron Geddon"], 668 },
+          { L["Sulfuron Harbinger"], 669 },
+          { L["Golemagg the Incinerator"], 670 },
+          { L["Majordomo Executus"], 671 },
+          { L["Ragnaros"], 672 }
+        }
+      },
+      {
+        L["Ahn'Qiraj"],
+        {
+          { L["The Prophet Skeram"], 709 },
+          { L["Silithid Royalty"], 710 },
+          { L["Battleguard Sartura"], 711 },
+          { L["Fankriss the Unyielding"], 712 },
+          { L["Viscidus"], 713 },
+          { L["Princess Huhuran"], 714 },
+          { L["Twin Emperors"], 715 },
+          { L["Ouro"], 716 },
+          { L["C'thun"], 717 }
+        }
+      },
+      {
+        L["Ruins of Ahn'Qiraj"],
+        {
+          { L["Kurinnaxx"], 718 },
+          { L["General Rajaxx"], 719 },
+          { L["Moam"], 720 },
+          { L["Buru the Gorger"], 721 },
+          { L["Ayamiss the Hunter"], 722 },
+          { L["Ossirian the Unscarred"], 723 }
+        }
+      },
+      {
+        L["Zul'Gurub"],
+        {
+          { L["High Priest Venoxis"], 784 },
+          { L["High Priestess Jeklik"], 785 },
+          { L["High Priestess Mar'li"], 786 },
+          { L["Bloodlord Mandokir"], 787 },
+          { L["Edge of Madness"], 788 },
+          { L["High Priest Thekal"], 789 },
+          { L["Gahz'ranka"], 790 },
+          { L["High Priestess Arlokk"], 791 },
+          { L["Jin'do the Hexxer"], 792 },
+          { L["Hakkar"], 793 }
+        }
+      },
+      {
+        L["Onyxia's Lair"],
+        {
+          { L["Onyxia"], 1084 }
+        }
+      },
+      {
+        L["Naxxramas"],
+        {
+          -- The Arachnid Quarter
+          { L["Anub'Rekhan"], 1107 },
+          { L["Grand Widow Faerlina"], 1110 },
+          { L["Maexxna"], 1116 },
+          -- The Plague Quarter
+          { L["Noth the Plaguebringer"], 1117 },
+          { L["Heigan the Unclean"], 1112 },
+          { L["Loatheb"], 1115 },
+          -- The Military Quarter
+          { L["Instructor Razuvious"], 1113 },
+          { L["Gothik the Harvester"], 1109 },
+          { L["The Four Horsemen"], 1121 },
+          -- The Construct Quarter
+          { L["Patchwerk"], 1118 },
+          { L["Grobbulus"], 1111 },
+          { L["Gluth"], 1108 },
+          { L["Thaddius"], 1120 },
+          -- Frostwyrm Lair
+          { L["Sapphiron"], 1119 },
+          { L["Kel'Thuzad"], 1114 }
+        }
+      }
+    }
+    for _, raid in ipairs(classic_raids) do
+      encounter_list = ("%s|cffffd200%s|r\n"):format(encounter_list, raid[1])
+      for _, boss in ipairs(raid[2]) do
+        for _, boss in ipairs(raid[2]) do
+          encounter_list = ("%s%s: %d\n"):format(encounter_list, boss[1], boss[2])
         end
-        encounter_list = encounter_list .. "\n"
       end
-
-      instance_index = instance_index + 1
-      instance_id = EJ_GetInstanceByIndex(instance_index, inRaid)
+      encounter_list = encounter_list .. "\n"
     end
-    zoneId_list = zoneId_list .. "\n"
+  elseif WeakAuras.IsBCC() then
+    local bcc_raids = {
+      {
+        L["Karazhan"],
+        {
+          { L["Attumen the Huntsman"], 652 },
+          { L["Moroes"], 653 },
+          { L["Maiden of Virtue"], 654 },
+          { L["Opera Hall"], 655 },
+          { L["The Curator"], 656 },
+          { L["Terestian Illhoof"], 657 },
+          { L["Shade of Aran"], 658 },
+          { L["Netherspite"], 659 },
+          { L["Chess Event"], 660 },
+          { L["Prince Malchezaar"], 661 },
+          { L["Nightbane"], 662 },
+        }
+      },
+      {
+        L["Gruul's Lair"],
+        {
+          { L["High King Maulgar"], 649 },
+          { L["Gruul the Dragonkiller"], 650 },
+        }
+      },
+      {
+        L["Magtheridon's Lair"],
+        {
+          { L["Magtheridon"], 651 },
+        }
+      },
+      {
+        L["Coilfang: Serpentshrine Cavern"],
+        {
+          { L["Hydross the Unstable"], 623 },
+          { L["The Lurker Below"], 624 },
+          { L["Leotheras the Blind"], 625 },
+          { L["Fathom-Lord Karathress"], 626 },
+          { L["Morogrim Tidewalker"], 627 },
+          { L["Lady Vashj"], 628 },
+        }
+      },
+      {
+        L["Tempest Keep"],
+        {
+          { L["Al'ar"], 730 },
+          { L["Void Reaver"], 731 },
+          { L["High Astromancer Solarian"], 732 },
+          { L["Kael'thas Sunstrider"], 733 },
+        }
+      },
+      {
+        L["The Battle for Mount Hyjal"],
+        {
+          { L["Rage Winterchill"], 618 },
+          { L["Anetheron"], 619 },
+          { L["Kaz'rogal"], 620 },
+          { L["Azgalor"], 621 },
+          { L["Archimonde"], 622 },
+        }
+      },
+      {
+        L["Black Temple"],
+        {
+          { L["High Warlord Naj'entus"], 601 },
+          { L["Supremus"], 602 },
+          { L["Shade of Akama"], 603 },
+          { L["Teron Gorefiend"], 604 },
+          { L["Gurtogg Bloodboil"], 605 },
+          { L["Reliquary of Souls"], 606 },
+          { L["Mother Shahraz"], 607 },
+          { L["The Illidari Council"], 608 },
+          { L["Illidan Stormrage"], 609 },
+        }
+      },
+      {
+        L["Zul'Aman"],
+        {
+          { L["Akil'zon"], 1189 },
+          { L["Nalorakk"], 1190 },
+          { L["Jan'alai"], 1191 },
+          { L["Halazzi"], 1192 },
+          { L["Hex Lord Malacrass"], 1193 },
+          { L["Daakara"], 1194 },
+        }
+      },
+      {
+        L["The Sunwell Plateau"],
+        {
+          { L["Kalecgos"], 724 },
+          { L["Brutallus"], 725 },
+          { L["Felmyst"], 726 },
+          { L["Eredar Twins"], 727 },
+          { L["M'uru"], 728 },
+          { L["Kil'jaeden"], 729 },
+        }
+      },
+    }
+    for _, raid in ipairs(bcc_raids) do
+      encounter_list = ("%s|cffffd200%s|r\n"):format(encounter_list, raid[1])
+      for _, boss in ipairs(raid[2]) do
+          encounter_list = ("%s%s: %d\n"):format(encounter_list, boss[1], boss[2])
+      end
+      encounter_list = encounter_list .. "\n"
+    end
+  elseif WeakAuras.IsRetail() then
+    EJ_SelectTier(EJ_GetNumTiers())
+
+    for _, inRaid in ipairs({false, true}) do
+      local instance_index = 1
+      local instance_id = EJ_GetInstanceByIndex(instance_index, true)
+      local title = inRaid and L["Raids"] or L["Dungeons"]
+      zoneId_list = ("%s|cffffd200%s|r\n"):format(zoneId_list, title)
+
+      while instance_id do
+        EJ_SelectInstance(instance_id)
+        local instance_name, _, _, _, _, dungeonAreaMapID = EJ_GetInstanceInfo(instance_id)
+        local ej_index = 1
+        local boss, _, encounter_id  = EJ_GetEncounterInfoByIndex(ej_index)
+
+        zoneId_list = ("%s%s: %d\n"):format(zoneId_list, instance_name, dungeonAreaMapID)
+
+        -- Encounter ids
+        if inRaid then
+          while boss do
+            if encounter_id then
+              if instance_name then
+                encounter_list = ("%s|cffffd200%s|r\n"):format(encounter_list, instance_name)
+                instance_name = nil -- Only add it once per section
+              end
+              encounter_list = ("%s%s: %d\n"):format(encounter_list, boss, encounter_id)
+            end
+            ej_index = ej_index + 1
+            boss, _, encounter_id = EJ_GetEncounterInfoByIndex(ej_index, instance_id)
+          end
+          encounter_list = encounter_list .. "\n"
+        end
+
+        instance_index = instance_index + 1
+        instance_id = EJ_GetInstanceByIndex(instance_index, inRaid)
+      end
+      zoneId_list = zoneId_list .. "\n"
+    end
+
   end
 
   return encounter_list:sub(1, -3) .. "\n\n" .. L["Supports multiple entries, separated by commas\n"]
