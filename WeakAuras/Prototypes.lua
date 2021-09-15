@@ -1091,13 +1091,6 @@ function WeakAuras.UnitPowerDisplayMod(powerType)
   return 1;
 end
 
-function WeakAuras.UseUnitPowerThirdArg(powerType)
-  if (powerType == 7 or powerType == 14) then
-    return true;
-  end
-  return nil;
-end
-
 function WeakAuras.GetNumSetItemsEquipped(setID)
   return false, 0, ""
   -- if not setID or not type(setID) == "number" then return end
@@ -2404,17 +2397,25 @@ Private.event_prototypes = {
     events = function(trigger)
       local unit = trigger.unit
       local result = {}
-      AddUnitEventForEvents(result, unit, "UNIT_POWER")
       AddUnitEventForEvents(result, unit, "UNIT_ENERGY")
       AddUnitEventForEvents(result, unit, "UNIT_MANA")
       AddUnitEventForEvents(result, unit, "UNIT_RAGE")
       AddUnitEventForEvents(result, unit, "UNIT_FOCUS")
       AddUnitEventForEvents(result, unit, "UNIT_RUNIC_POWER")
 
-      AddUnitEventForEvents(result, unit, "UNIT_POWER_UPDATE")
-      AddUnitEventForEvents(result, unit, "UNIT_MAXPOWER")
+      AddUnitEventForEvents(result, unit, "UNIT_MAXENERGY")
+      AddUnitEventForEvents(result, unit, "UNIT_MAXMANA")
+      AddUnitEventForEvents(result, unit, "UNIT_MAXRAGE")
+      AddUnitEventForEvents(result, unit, "UNIT_MAXFOCUS")
+      AddUnitEventForEvents(result, unit, "UNIT_MAXRUNIC_POWER")
+
+      AddUnitEventForEvents(result, unit, "UNIT_POWER_FREQUENT")
       AddUnitEventForEvents(result, unit, "UNIT_DISPLAYPOWER")
       AddUnitEventForEvents(result, unit, "UNIT_NAME_UPDATE")
+
+      -- if (trigger.powertype == 3) then
+      --   AddUnitEventForEvents(result, nil, "FRAME_UPDATE")
+      -- end
 
       -- The api for spell power costs is not meant to be for other units
       if trigger.use_showCost and trigger.unit == "player" then
@@ -2448,8 +2449,6 @@ Private.event_prototypes = {
         local powerType = %s;
         local unitPowerType = UnitPowerType(unit);
         local powerTypeToCheck = powerType or unitPowerType;
-        local powerThirdArg = WeakAuras.UseUnitPowerThirdArg(powerTypeToCheck);
-        if not WeakAuras.IsRetail() and powerType == 99 then powerType = 1 end
       ]=];
       ret = ret:format(trigger.unit == "group" and "true" or "false", trigger.use_powertype and trigger.powertype or "nil");
 
@@ -2532,8 +2531,8 @@ Private.event_prototypes = {
         name = "power",
         display = L["Power"],
         type = "number",
-        init = "powerType == 4 and GetComboPoints(unit, unit .. '-target') or UnitPower(unit, powerType, powerThirdArg)"
-                                     or "UnitPower(unit, powerType, powerThirdArg) / WeakAuras.UnitPowerDisplayMod(powerTypeToCheck)",
+        init = "powerType == 4 and GetComboPoints(unit, unit .. '-target') or UnitPower(unit, powerType)"
+                                     or "UnitPower(unit, powerType) / WeakAuras.UnitPowerDisplayMod(powerTypeToCheck)",
         store = true,
         conditionType = "number",
       },
@@ -2547,8 +2546,8 @@ Private.event_prototypes = {
       {
         name = "total",
         hidden = true,
-        init = "powerType == 4 and (math.max(1, UnitPowerMax(unit, 14))) or math.max(1, UnitPowerMax(unit, powerType, powerThirdArg))"
-                                      or "math.max(1, UnitPowerMax(unit, powerType, powerThirdArg)) / WeakAuras.UnitPowerDisplayMod(powerTypeToCheck)",
+        init = "powerType == 4 and (math.max(1, UnitPowerMax(unit, 14))) or math.max(1, UnitPowerMax(unit, powerType))"
+                                      or "math.max(1, UnitPowerMax(unit, powerType)) / WeakAuras.UnitPowerDisplayMod(powerTypeToCheck)",
         store = true,
         test = "true"
       },

@@ -854,7 +854,7 @@ function Private.RefreshTooltipButtons()
   else
     showCodeButton:Show()
   end
-  urlEditBox:Enable()
+  -- urlEditBox:Enable()
   if pendingData.url then
     urlEditBox:Show()
     urlEditBox.text = pendingData.url
