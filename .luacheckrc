@@ -1484,7 +1484,6 @@ globals = {
 	"GetSpellBaseCooldown",
 	"GetSpellBonusDamage",
 	"GetSpellBonusHealing",
-	"GetSpellBookItemInfo",
 	"GetSpellName",
 	"GetSpellBookItemTexture",
 	"GetSpellCooldown",
