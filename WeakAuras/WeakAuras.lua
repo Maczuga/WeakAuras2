@@ -1324,11 +1324,6 @@ local function scanForLoadsImpl(toCheck, event, arg1, ...)
 
   toCheck = toCheck or loadEvents[event or "SCAN_ALL"]
 
-  -- PET_BATTLE_CLOSE fires twice at the end of a pet battle. IsInBattle evaluates to TRUE during the
-  -- first firing, and FALSE during the second. I am not sure if this check is necessary, but the
-  -- following IF statement limits the impact of the PET_BATTLE_CLOSE event to the second one.
-  if (event == "PET_BATTLE_CLOSE" and C_PetBattles.IsInBattle()) then return end
-
   if (event == "PLAYER_LEVEL_UP") then
     playerLevel = arg1;
   end
@@ -1352,7 +1347,7 @@ local function scanForLoadsImpl(toCheck, event, arg1, ...)
 
   local player, realm, zone = UnitName("player"), GetRealmName(), GetRealZoneText()
   local spec, specId, role = false, false, false
-  local inPetBattle, vehicle, vehicleUi = false, false, false
+  local vehicle, vehicleUi = false, false
   local zoneId = GetCurrentMapAreaID()
   local zonegroupId = false
   local _, race = UnitRace("player")
@@ -1374,7 +1369,6 @@ local function scanForLoadsImpl(toCheck, event, arg1, ...)
     spec = GetSpecialization() or 0
     specId = GetSpecializationInfo(spec)
     role = select(6, GetSpecializationInfo(spec))
-    inPetBattle = C_PetBattles.IsInBattle()
     vehicle = UnitInVehicle('player') or UnitOnTaxi('player')
     vehicleUi = UnitHasVehicleUI('player') or HasOverrideActionBar() or HasVehicleActionBar()
   end
@@ -1406,8 +1400,8 @@ local function scanForLoadsImpl(toCheck, event, arg1, ...)
       local loadFunc = loadFuncs[id];
       local loadOpt = loadFuncsForOptions[id];
 
-      shouldBeLoaded = loadFunc and loadFunc("ScanForLoads_Auras", inCombat, inEncounter, alive, inPetBattle, vehicle, vehicleUi, group, player, realm, class, spec, specId, race, faction, playerLevel, zone, zoneId, zonegroupId, encounter_id, size, difficulty, difficultyIndex, role);
-      couldBeLoaded =  loadOpt and loadOpt("ScanForLoads_Auras",   inCombat, inEncounter, alive, inPetBattle, vehicle, vehicleUi, group, player, realm, class, spec, specId, race, faction, playerLevel, zone, zoneId, zonegroupId, encounter_id, size, difficulty, difficultyIndex, role);
+      shouldBeLoaded = loadFunc and loadFunc("ScanForLoads_Auras", inCombat, inEncounter, alive, vehicle, vehicleUi, group, player, realm, class, spec, specId, race, faction, playerLevel, zone, zoneId, zonegroupId, encounter_id, size, difficulty, difficultyIndex, role);
+      couldBeLoaded =  loadOpt and loadOpt("ScanForLoads_Auras",   inCombat, inEncounter, alive, vehicle, vehicleUi, group, player, realm, class, spec, specId, race, faction, playerLevel, zone, zoneId, zonegroupId, encounter_id, size, difficulty, difficultyIndex, role);
 
       if(shouldBeLoaded and not loaded[id]) then
         changed = changed + 1;

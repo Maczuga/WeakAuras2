@@ -1186,17 +1186,6 @@ Private.load_prototype = {
       init = "false",
     },
     {
-      name = "petbattle",
-      display = L["In Pet Battle"],
-      type = "tristate",
-      init = "arg",
-      width = WeakAuras.normalWidth,
-      optional = true,
-      enable = WeakAuras.IsRetail(),
-      hidden = not WeakAuras.IsRetail(),
-      events = {"PET_BATTLE_OPENING_START", "PET_BATTLE_CLOSE"}
-    },
-    {
       name = "vehicle",
       display = (WeakAuras.IsClassic() or WeakAuras.IsBCC()) and L["On Taxi"] or L["In Vehicle"],
       type = "tristate",
