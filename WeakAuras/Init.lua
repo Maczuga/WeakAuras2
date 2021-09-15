@@ -35,6 +35,10 @@ function WeakAuras.IsWotLK()
   return true
 end
 
+function WeakAuras.IsAscension()
+  return GetCVar("realmList") == "54.38.44.99"
+end
+
 function WeakAuras.IsRetail()
   return false
 end

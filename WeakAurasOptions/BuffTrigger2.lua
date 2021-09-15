@@ -117,11 +117,11 @@ local function CreateNameOptions(aura_options, data, trigger, size, isExactSpell
         return name
       end
       aura_options[iconOption].image = function()
-        local icon = select(3, GetSpellInfo(trigger[optionKey] and trigger[optionKey][i]))
+        local icon = select(3, GetSpellInfo(trigger[optionKey] and trigger[optionKey][i] or 0))
         return icon and tostring(icon) or "", 18, 18
       end
       aura_options[iconOption].disabled = function()
-        return not trigger[optionKey] or not trigger[optionKey][i] or not select(3, GetSpellInfo(trigger[optionKey] and trigger[optionKey][i]))
+        return not trigger[optionKey] or not trigger[optionKey][i] or not select(3, GetSpellInfo(trigger[optionKey] and trigger[optionKey][i] or 0))
       end
     else
       aura_options[iconOption].name = function()

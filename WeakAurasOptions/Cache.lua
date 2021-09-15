@@ -32,7 +32,7 @@ function spellCache.Build()
     local id = 0
     local misses = 0
 
-    while misses < 400 do
+    while WeakAuras.IsAscension() and id <= 1000000 or misses < 400 do
       id = id + 1
       local name, _, icon = GetSpellInfo(id)
 
@@ -50,7 +50,7 @@ function spellCache.Build()
       coroutine.yield()
     end
 
-    if WeakAuras.IsRetail() then
+    if WeakAuras.IsRetail() or WeakAuras.IsWotLK() then
       for _, category in pairs(GetCategoryList()) do
         local total = GetCategoryNumAchievements(category, true)
         for i = 1, total do

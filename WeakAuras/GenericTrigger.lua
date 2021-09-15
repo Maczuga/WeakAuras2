@@ -2053,7 +2053,7 @@ do
 
   function WeakAuras.GetSpellCooldownUnified(id, runeDuration)
     local startTimeCooldown, durationCooldown, enabled = GetSpellCooldown(id)
-    local charges, maxCharges, startTimeCharges, durationCharges = GetSpellCharges(id);
+    local charges, maxCharges, startTimeCharges, durationCharges = nil, nil, 0, 0
 
     startTimeCooldown = startTimeCooldown or 0;
     durationCooldown = durationCooldown or 0;

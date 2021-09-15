@@ -5008,7 +5008,7 @@ end
 -- The C api often takes only 32bit values, and complains if passed a value outside
 function WeakAuras.SafeToNumber(input)
   local nr = tonumber(input)
-  return nr and (nr < 2147483648 and nr > -2147483649) and nr or nil
+  return nr and (nr < 2147483648 and nr > -2147483649) and nr or 0
 end
 
 local textSymbols = {
