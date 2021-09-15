@@ -895,10 +895,6 @@ function Private.Modernize(data)
             replacements[triggerId] = {}
             replacements[triggerId]["use_name"] = "use_namerealm"
             replacements[triggerId]["name"] = "namerealm"
-          elseif event == "Alternate Power" then
-            replacements[triggerId] = {}
-            replacements[triggerId]["use_unitname"] = "use_namerealm"
-            replacements[triggerId]["unitname"] = "namerealm"
           elseif event == "Cast" then
             replacements[triggerId] = {}
             replacements[triggerId]["use_sourceName"] = "use_sourceNameRealm"
@@ -1050,7 +1046,6 @@ function Private.Modernize(data)
       ["Unit Characteristics"] = "unit",
       ["Cooldown Progress (Spell)"] = "spell",
       ["Power"] = "unit",
-      ["PvP Talent Selected"] = "unit",
       ["Combat Log"] = "combatlog",
       ["Item Set"] = "item",
       ["Health"] = "unit",
@@ -1072,7 +1067,6 @@ function Private.Modernize(data)
       ["Spell Activation Overlay"] = "spell",
       ["DBM Timer"] = "addons",
       ["Item Type Equipped"] = "item",
-      ["Alternate Power"] = "unit",
       ["Item Equipped"] = "item",
       ["Item Bonus Id Equipped"] = "item",
       ["DBM Announce"] = "addons",

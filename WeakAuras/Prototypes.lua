@@ -9,7 +9,7 @@ local ceil, min = ceil, min
 
 -- WoW APIs
 local GetTalentInfo = GetTalentInfo
-local GetNumSpecializationsForClassID, GetSpecialization = GetNumSpecializationsForClassID, GetSpecialization
+local GetSpecialization = GetSpecialization
 local UnitClass, UnitHealth, UnitHealthMax, UnitName, UnitPower, UnitPowerMax = UnitClass, UnitHealth, UnitHealthMax, UnitName, UnitPower, UnitPowerMax
 local GetSpellInfo, GetItemInfo, GetItemCount, GetItemIcon = GetSpellInfo, GetItemInfo, GetItemCount, GetItemIcon
 local GetShapeshiftFormInfo, GetShapeshiftForm = GetShapeshiftFormInfo, GetShapeshiftForm
@@ -99,7 +99,7 @@ local constants = {
   nameRealmFilterDesc = L[" Filter formats: 'Name', 'Name-Realm', '-Realm'. \n\nSupports multiple entries, separated by commas\n"],
 }
 
-if WeakAuras.IsClassic() or WeakAuras.IsBCC() then
+if WeakAuras.IsClassic() or WeakAuras.IsBCC() or WeakAuras.IsWotLK() then
   WeakAuras.UnitRaidRole = function(unit)
     local raidID = UnitInRaid(unit)
     if raidID then
@@ -111,6 +111,10 @@ end
 local encounter_list = ""
 local zoneId_list = ""
 function Private.InitializeEncounterAndZoneLists()
+  if true then
+    return
+  end
+
   if encounter_list ~= "" then
     return
   end
@@ -1058,7 +1062,7 @@ Private.load_prototype = {
             for class in pairs(trigger.class.multi) do
               single_class = class;
               -- If any checked class has only 3 specs, min_specs will become 3
-              min_specs = min(min_specs, GetNumSpecializationsForClassID(WeakAuras.class_ids[class]))
+              min_specs = min(min_specs, 3)
               num_classes = num_classes + 1;
             end
             if(num_classes ~= 1) then
@@ -1078,14 +1082,7 @@ Private.load_prototype = {
           if(single_class) then
             return WeakAuras.spec_types_specific[single_class];
           else
-            -- List 4 specs if no class is specified, but if any multi-selected classes have less than 4 specs, list 3 instead
-            if (min_specs < 3) then
-              return Private.spec_types_2;
-            elseif(min_specs < 4) then
-              return Private.spec_types_3;
-            else
-              return Private.spec_types;
-            end
+              return Private.spec_types_reduced;
           end
         end
       end,
@@ -2498,218 +2495,6 @@ Private.event_prototypes = {
         enable = function(trigger)
           return WeakAuras.IsRetail() and trigger.unit == 'player' and trigger.use_powertype and trigger.powertype == 4 and trigger.use_showChargedComboPoints
         end,
-      }
-    },
-    automaticrequired = true
-  },
-  ["Alternate Power"] = {
-    type = "unit",
-    canHaveDuration = true,
-    events = function(trigger)
-      local unit = trigger.unit
-      local result = {}
-      AddUnitEventForEvents(result, unit, "UNIT_POWER_FREQUENT")
-      AddUnitEventForEvents(result, unit, "UNIT_NAME_UPDATE")
-      if trigger.use_ignoreDead or trigger.use_ignoreDisconnected then
-        AddUnitEventForEvents(result, unit, "UNIT_FLAGS")
-      end
-      AddUnitEventForEvents(result, unit, "UNIT_POWER_BAR_SHOW")
-      return result
-    end,
-    internal_events = function(trigger)
-      local unit = trigger.unit
-      local result = { }
-      AddUnitChangeInternalEvents(unit, result)
-      AddUnitRoleChangeInternalEvents(unit, result)
-      return result
-    end,
-    force_events = unitHelperFunctions.UnitChangedForceEvents,
-    name = L["Alternate Power"],
-    init = function(trigger)
-      trigger.unit = trigger.unit or "player";
-      local ret = [=[
-        unit = string.lower(unit)
-        local unitname, realm = WeakAuras.UnitNameWithRealm(unit)
-        local smart = %s
-      ]=]
-
-      ret = ret .. unitHelperFunctions.SpecificUnitCheck(trigger)
-
-      return ret:format(trigger.unit == "group" and "true" or "false");
-    end,
-    statesParameter = "unit",
-    args = {
-      {
-        name = "unit",
-        required = true,
-        display = L["Unit"],
-        type = "unit",
-        init = "arg",
-        values = "actual_unit_types_cast",
-        test = "true",
-        store = true
-      },
-      {
-        name = "power",
-        display = L["Alternate Power"],
-        type = "number",
-        init = "UnitPower(unit, 10)"
-      },
-      {
-        name = "value",
-        hidden = true,
-        init = "power",
-        store = true,
-        test = "true"
-      },
-      {
-        name = "total",
-        hidden = true,
-        init = "UnitPowerMax(unit, 10)",
-        store = true,
-        test = "true"
-      },
-      {
-        name = "progressType",
-        hidden = true,
-        init = "'static'",
-        store = true,
-        test = "true"
-      },
-      {
-        name = "name",
-        hidden = true,
-        init = "GetUnitPowerBarStrings(unit)",
-        store = true,
-        test = "true"
-      },
-      {
-        name = "unitname",
-        display = L["Unit Name"],
-        type = "string",
-        store = true,
-        hidden = true,
-        test = "true"
-      },
-      {
-        name = "unitrealm",
-        display = L["Realm"],
-        type = "string",
-        store = true,
-        hidden = true,
-        test = "true"
-      },
-      {
-        name = "namerealm",
-        display = L["Unit Name/Realm"],
-        type = "string",
-        preamble = "local nameRealmChecker = WeakAuras.ParseNameCheck(%q)",
-        test = "nameRealmChecker:Check(unitname, unitrealm)",
-        conditionType = "string",
-        conditionPreamble = function(input)
-          return WeakAuras.ParseNameCheck(input)
-        end,
-        conditionTest = function(state, needle, op, preamble)
-          return preamble:Check(state.unitname, state.unitrealm)
-        end,
-        operator_types = "none",
-        desc = constants.nameRealmFilterDesc,
-      },
-      {
-        name = "icon",
-        hidden = true,
-        init = "GetUnitPowerBarTextureInfo(unit, 1)",
-        store = true,
-        test = "true"
-      },
-      {
-        name = "class",
-        display = L["Class"],
-        type = "select",
-        init = "select(2, UnitClass(unit))",
-        values = "class_types",
-        store = true,
-        conditionType = "select"
-      },
-      {
-        name = "role",
-        display = L["Assigned Role"],
-        type = "select",
-        init = "UnitGroupRolesAssigned(unit)",
-        values = "role_types",
-        store = true,
-        conditionType = "select",
-        enable = function(trigger)
-          return WeakAuras.IsRetail() and (trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party")
-        end
-      },
-      {
-        name = "ignoreSelf",
-        display = L["Ignore Self"],
-        type = "toggle",
-        width = WeakAuras.doubleWidth,
-        enable = function(trigger)
-          return trigger.unit == "nameplate" or trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party"
-        end,
-        init = "not UnitIsUnit(\"player\", unit)"
-      },
-      {
-        name = "ignoreDead",
-        display = L["Ignore Dead"],
-        type = "toggle",
-        width = WeakAuras.doubleWidth,
-        enable = function(trigger)
-          return trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party"
-        end,
-        init = "not UnitIsDeadOrGhost(unit)"
-      },
-      {
-        name = "ignoreDisconnected",
-        display = L["Ignore Disconnected"],
-        type = "toggle",
-        width = WeakAuras.doubleWidth,
-        enable = function(trigger)
-          return trigger.unit == "group" or trigger.unit == "raid" or trigger.unit == "party"
-        end,
-        init = "UnitIsConnected(unit)"
-      },
-      {
-        name = "nameplateType",
-        display = L["Nameplate Type"],
-        type = "select",
-        init = "WeakAuras.GetPlayerReaction(unit)",
-        values = "hostility_types",
-        store = true,
-        conditionType = "select",
-        enable = function(trigger)
-          return trigger.unit == "nameplate"
-        end
-      },
-      {
-        hidden = true,
-        test = "name and WeakAuras.UnitExistsFixed(unit, smart) and specificUnitCheck"
-      }
-    },
-    automaticrequired = true
-  },
-  ["Eclipse Direction"] = {
-    type = "unit",
-    events = {
-      ["unit_events"] = {
-        ["player"] = { "UNIT_POWER_FREQUENT" }
-      }
-    },
-    internal_events = { "WA_DELAYED_PLAYER_ENTERING_WORLD" },
-    force_events = "WA_DELAYED_PLAYER_ENTERING_WORLD",
-    name = L["Eclipse Direction"],
-    args = {
-      {
-        name = "eclipse_direction",
-        -- required = true,
-        display = L["Eclipse Direction"],
-        type = "select",
-        values = "eclipse_types",
-        init = "GetEclipseDirection()",
       }
     },
     automaticrequired = true
@@ -6678,7 +6463,7 @@ Private.event_prototypes = {
         name = "lockoutSchool",
         display = L["Interrupted School Text"],
         hidden = true,
-        init = "lockoutSchool and lockoutSchool > 0 and GetSchoolString(lockoutSchool) or nil",
+        init = "lockoutSchool and lockoutSchool > 0 and WeakAuras.GetSchoolString(lockoutSchool) or nil",
         store = true,
         test = "true",
       },
@@ -7272,7 +7057,7 @@ Private.event_prototypes = {
         type = "number",
         init = "select(2, UnitResistance('player', 1))",
         store = true,
-        enable = WeakAuras.IsClassic() or WeakAuras.IsBCC(),
+        enable = WeakAuras.IsClassic() or WeakAuras.IsBCC() or WeakAuras.IsWotLK(),
         conditionType = "number",
         hidden = WeakAuras.IsRetail()
       },
@@ -7282,7 +7067,7 @@ Private.event_prototypes = {
         type = "number",
         init = "select(2, UnitResistance('player', 2))",
         store = true,
-        enable = WeakAuras.IsClassic() or WeakAuras.IsBCC(),
+        enable = WeakAuras.IsClassic() or WeakAuras.IsBCC() or WeakAuras.IsWotLK(),
         conditionType = "number",
         hidden = WeakAuras.IsRetail()
       },
@@ -7292,7 +7077,7 @@ Private.event_prototypes = {
         type = "number",
         init = "select(2, UnitResistance('player', 3))",
         store = true,
-        enable = WeakAuras.IsClassic() or WeakAuras.IsBCC(),
+        enable = WeakAuras.IsClassic() or WeakAuras.IsBCC() or WeakAuras.IsWotLK(),
         conditionType = "number",
         hidden = WeakAuras.IsRetail()
       },
@@ -7302,7 +7087,7 @@ Private.event_prototypes = {
         type = "number",
         init = "select(2, UnitResistance('player', 4))",
         store = true,
-        enable = WeakAuras.IsClassic() or WeakAuras.IsBCC(),
+        enable = WeakAuras.IsClassic() or WeakAuras.IsBCC() or WeakAuras.IsWotLK(),
         conditionType = "number",
         hidden = WeakAuras.IsRetail()
       },
@@ -7312,7 +7097,7 @@ Private.event_prototypes = {
         type = "number",
         init = "select(2, UnitResistance('player', 5))",
         store = true,
-        enable = WeakAuras.IsClassic() or WeakAuras.IsBCC(),
+        enable = WeakAuras.IsClassic() or WeakAuras.IsBCC() or WeakAuras.IsWotLK(),
         conditionType = "number",
         hidden = WeakAuras.IsRetail()
       },
@@ -7322,7 +7107,7 @@ Private.event_prototypes = {
         type = "number",
         init = "select(2, UnitResistance('player', 6))",
         store = true,
-        enable = WeakAuras.IsClassic() or WeakAuras.IsBCC(),
+        enable = WeakAuras.IsClassic() or WeakAuras.IsBCC() or WeakAuras.IsWotLK(),
         conditionType = "number",
         hidden = WeakAuras.IsRetail()
       },
@@ -7965,7 +7750,6 @@ if WeakAuras.IsClassic() or WeakAuras.IsBCC() then
   Private.event_prototypes["Equipment Set"] = nil
   Private.event_prototypes["Spell Activation Overlay"] = nil
   Private.event_prototypes["Crowd Controlled"] = nil
-  Private.event_prototypes["PvP Talent Selected"] = nil
   Private.event_prototypes["Class/Spec"] = nil
 else
   Private.event_prototypes["Queued Action"] = nil

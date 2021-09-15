@@ -867,9 +867,9 @@ local function GetAllUnits(unit, allUnits)
     end
 
     -- allunits == false
-    if IsInRaid() then
+    if WeakAuras.IsInRaid() then
       local i = 1
-      local max = GetNumGroupMembers()
+      local max = WeakAuras.GetNumGroupMembers()
       return function()
         if i <= max then
           local ret = WeakAuras.raidUnits[i]
@@ -880,7 +880,7 @@ local function GetAllUnits(unit, allUnits)
       end
     else
       local i = 0
-      local max = GetNumSubgroupMembers()
+      local max = WeakAuras.GetNumSubgroupMembers()
       return function()
         if i == 0 then
           i = 1
@@ -981,7 +981,7 @@ local function TriggerInfoApplies(triggerInfo, unit)
   end
 
   if triggerInfo.unit == "group" and triggerInfo.groupSubType == "party" then
-    if IsInRaid() then
+    if WeakAuras.IsInRaid() then
       -- Filter our player/party# while in raid and keep only raid units that are correct
       if not Private.multiUnitUnits.raid[unit] or not UnitInSubgroupOrPlayer(unit) then
         return false
@@ -994,7 +994,7 @@ local function TriggerInfoApplies(triggerInfo, unit)
   end
 
   -- Filter our player/party# while in raid
-  if (triggerInfo.unit == "group" and triggerInfo.groupSubType == "group" and IsInRaid() and not Private.multiUnitUnits.raid[unit]) then
+  if (triggerInfo.unit == "group" and triggerInfo.groupSubType == "group" and WeakAuras.IsInRaid() and not Private.multiUnitUnits.raid[unit]) then
     return false
   end
 
@@ -1476,9 +1476,9 @@ local function ScanAllBoss(time, matchDataChanged)
 end
 
 local function ScanUnit(time, arg1)
-  if (Private.multiUnitUnits.raid[arg1] and IsInRaid()) then
+  if (Private.multiUnitUnits.raid[arg1] and WeakAuras.IsInRaid()) then
     ScanGroupUnit(time, matchDataChanged, "group", arg1)
-  elseif (Private.multiUnitUnits.party[arg1] and not IsInRaid()) then
+  elseif (Private.multiUnitUnits.party[arg1] and not WeakAuras.IsInRaid()) then
     ScanGroupUnit(time, matchDataChanged, "group", arg1)
   elseif Private.multiUnitUnits.boss[arg1] then
     ScanGroupUnit(time, matchDataChanged, "boss", arg1)

@@ -119,7 +119,7 @@ local function ConfigureModel(region, model, data)
 
   -- Adjust model
   WeakAuras.SetModel(model, data.model_path, data.model_fileId, data.modelIsUnit, data.modelDisplayInfo)
-  model:SetPortraitZoom(data.portraitZoom and 1 or 0);
+  -- model:SetPortraitZoom(data.portraitZoom and 1 or 0);
   -- model:ClearTransform()
   if (data.api) then
     model:MakeCurrentCameraCustom()

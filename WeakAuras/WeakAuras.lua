@@ -7,8 +7,8 @@ local insert = table.insert
 
 -- WoW APIs
 local GetTalentInfo, IsAddOnLoaded, InCombatLockdown = GetTalentInfo, IsAddOnLoaded, InCombatLockdown
-local LoadAddOn, UnitName, GetRealmName, UnitRace, UnitFactionGroup, IsInRaid
-  = LoadAddOn, UnitName, GetRealmName, UnitRace, UnitFactionGroup, IsInRaid
+local LoadAddOn, UnitName, GetRealmName, UnitRace, UnitFactionGroup
+  = LoadAddOn, UnitName, GetRealmName, UnitRace, UnitFactionGroup
 local UnitClass, UnitExists, UnitGUID, UnitAffectingCombat, GetInstanceInfo, IsInInstance
   = UnitClass, UnitExists, UnitGUID, UnitAffectingCombat, GetInstanceInfo, IsInInstance
 local UnitIsUnit, GetRaidRosterInfo, GetSpecialization, UnitInVehicle, UnitHasVehicleUI, GetSpellInfo
@@ -1109,7 +1109,8 @@ loadedFrame:SetScript("OnEvent", function(self, event, addon)
         end
         CreateTalentCache() -- It seems that GetTalentInfo might give info about whatever class was previously being played, until PLAYER_ENTERING_WORLD
         Private.UpdateCurrentInstanceType();
-        Private.InitializeEncounterAndZoneLists()
+        Private.InitializeEncounterAndZoneLists();
+        Private.InitSpellSchools();
       end
     elseif(event == "ACTIVE_TALENT_GROUP_CHANGED" or event == "CHARACTER_POINTS_CHANGED" or event == "SPELLS_CHANGED") then
       callback = CreateTalentCache;
@@ -1278,10 +1279,10 @@ function Private.IsOptionsProcessingPaused()
 end
 
 function WeakAuras.GroupType()
-  if (IsInRaid()) then
+  if (WeakAuras.IsInRaid()) then
     return "raid";
   end
-  if (IsInGroup()) then
+  if (WeakAuras.IsInGroup()) then
     return "group";
   end
   return "solo";
@@ -1361,7 +1362,7 @@ local function scanForLoadsImpl(toCheck, event, arg1, ...)
   local inEncounter = encounter_id ~= 0;
   local alive = not UnitIsDeadOrGhost('player')
 
-  if WeakAuras.IsClassic() or WeakAuras.IsBCC() then
+  if WeakAuras.IsClassic() or WeakAuras.IsBCC() or WeakAuras.IsWotLK() then
     -- local raidID = UnitInRaid("player")
     -- if raidID then
     --   raidRole = select(10, GetRaidRosterInfo(raidID))
@@ -2928,7 +2929,7 @@ function Private.HandleChatAction(message_type, message, message_dest, message_c
       end
     end
   elseif(message_type == "SMARTRAID") then
-    local isInstanceGroup = IsInGroup(LE_PARTY_CATEGORY_INSTANCE)
+    local isInstanceGroup = WeakAuras.IsInGroup(LE_PARTY_CATEGORY_INSTANCE)
     if UnitInBattleground("player") then
       pcall(function() SendChatMessage(message, "INSTANCE_CHAT") end)
     elseif UnitInRaid("player") then
@@ -5473,3 +5474,8 @@ function WeakAuras.GetCritChance(specId)
     return GetCritChance()
   end
 end
+
+function WeakAuras.IsInGroup() return GetNumPartyMembers() > 0 end
+function WeakAuras.IsInRaid() return GetNumRaidMembers() > 0 end
+function WeakAuras.GetNumGroupMembers() local rm = GetNumRaidMembers() return (rm > 0 and rm) or GetNumPartyMembers() end
+function WeakAuras.GetNumSubgroupMembers() return GetNumPartyMembers() end

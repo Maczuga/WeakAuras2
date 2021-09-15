@@ -540,7 +540,10 @@ function OptionsPrivate.CreateFrame()
   frame.moversizer, frame.mover = OptionsPrivate.MoverSizer(frame)
 
   -- filter line
-  local filterInput = CreateFrame("editbox", "WeakAurasFilterInput", frame, "SearchBoxTemplate")
+  local filterInput = CreateFrame("editbox", "WeakAurasFilterInput", frame, "InputBoxTemplate")
+  filterInput:SetAutoFocus(false)
+  filterInput:SetScript("OnEnterPressed", function(...) filterInput:ClearFocus() end)
+  filterInput:SetScript("OnEscapePressed", function(...) filterInput:SetText(""); filterInput:ClearFocus() end)
   filterInput:SetScript("OnTextChanged", function(...)
     OptionsPrivate.SortDisplayButtons(filterInput:GetText())
   end)

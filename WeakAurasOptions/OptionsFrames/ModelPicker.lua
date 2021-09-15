@@ -57,7 +57,10 @@ local function ConstructModelPicker(frame)
   group.frame:Hide();
   group:SetLayout("flow");
 
-  local filterInput = CreateFrame("editbox", "WeakAurasFilterInput", group.frame, "SearchBoxTemplate")
+  local filterInput = CreateFrame("editbox", "WeakAurasFilterInput", group.frame, "InputBoxTemplate")
+  filterInput:SetAutoFocus(false)
+  filterInput:SetScript("OnEnterPressed", function(...) filterInput:ClearFocus() end)
+  filterInput:SetScript("OnEscapePressed", function(...) filterInput:SetText(""); filterInput:ClearFocus() end)
   filterInput:SetScript("OnTextChanged", function(self)
     local filterText = filterInput:GetText()
     RecurseSetFilter(group.modelTree.tree, filterText)

@@ -13,7 +13,7 @@ local Retail = LibStub("LibRetail")
 
 local wipe, tinsert = wipe, tinsert
 local GetNumShapeshiftForms, GetShapeshiftFormInfo = GetNumShapeshiftForms, GetShapeshiftFormInfo
-local GetNumSpecializationsForClassID, GetSpecializationInfoForClassID = GetNumSpecializationsForClassID, GetSpecializationInfoForClassID
+local GetTalentTabInfo = GetTalentTabInfo
 local WrapTextInColorCode = WrapTextInColorCode
 local MAX_NUM_TALENTS = MAX_NUM_TALENTS or 20
 
@@ -1228,41 +1228,38 @@ Private.orientation_with_circle_types = {
   ANTICLOCKWISE = L["Anticlockwise"]
 }
 
-Private.spec_types = {
-  [1] = SPECIALIZATION.." 1",
-  [2] = SPECIALIZATION.." 2",
-  [3] = SPECIALIZATION.." 3",
-  [4] = SPECIALIZATION.." 4"
-}
-
-Private.spec_types_3 = {
+local SPECIALIZATION = "Specialization"
+Private.spec_types_reduced = {
   [1] = SPECIALIZATION.." 1",
   [2] = SPECIALIZATION.." 2",
   [3] = SPECIALIZATION.." 3"
 }
 
-Private.spec_types_2 = {
-  [1] = SPECIALIZATION.." 1",
-  [2] = SPECIALIZATION.." 2"
+Private.spec_types = {
+  [1] = TALENT_SPEC_PRIMARY,
+  [2] = TALENT_SPEC_SECONDARY,
 }
 
 WeakAuras.spec_types_specific = {}
 Private.spec_types_all = {}
 local function update_specs()
   for classFileName, classID in pairs(WeakAuras.class_ids) do
-    WeakAuras.spec_types_specific[classFileName] = {}
-    local classTexcoords = CLASS_ICON_TCOORDS[classFileName]
-    local numSpecs = GetNumSpecializationsForClassID(classID)
-    for i=1, numSpecs do
-      local specId, tabName, _, icon = GetSpecializationInfoForClassID(classID, i);
-      if tabName then
-        tinsert(WeakAuras.spec_types_specific[classFileName], "|T"..(icon or "error")..":0|t "..(tabName or "error"));
-        Private.spec_types_all[specId] = "|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:0:0:0:0:256:256:"
-         .. classTexcoords[1] * 256 .. ":" .. classTexcoords[2] * 256 .. ":" .. classTexcoords[3] * 256 .. ":" .. classTexcoords[4] * 256
-         .. ":0|t"
-         .. "|T"..(icon or "error")..":0|t "..(tabName or "error");
-      end
-    end
+    WeakAuras.spec_types_specific[classFileName] = {
+		TALENT_SPEC_PRIMARY,
+		TALENT_SPEC_SECONDARY,
+  }
+    -- local classTexcoords = CLASS_ICON_TCOORDS[classFileName]
+    -- local numSpecs = 3
+    -- for i=1, numSpecs do
+    --   local tabName, icon = GetTalentTabInfo(i);
+    --   if tabName then
+    --     tinsert(WeakAuras.spec_types_specific[classFileName], "|T"..(icon or "error")..":0|t "..(tabName or "error"));
+    --     Private.spec_types_all[classID .. "-" .. i] = "|TInterface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES:0:0:0:0:256:256:"
+    --      .. classTexcoords[1] * 256 .. ":" .. classTexcoords[2] * 256 .. ":" .. classTexcoords[3] * 256 .. ":" .. classTexcoords[4] * 256
+    --      .. ":0|t"
+    --      .. "|T"..(icon or "error")..":0|t "..(tabName or "error");
+    --   end
+    -- end
   end
 end
 
@@ -1287,7 +1284,7 @@ if WeakAuras.IsRetail() then
     tier = 1
   end
 else
-  for tab = 1, GetNumSpecializations() do
+  for tab = 1, GetNumTalentTabs() do
     for num_talent = 1, GetNumTalents(tab) do
       local talentId = (tab - 1) * MAX_NUM_TALENTS + num_talent
       Private.talent_types[talentId] = L["Tab "]..tab.." - "..num_talent
@@ -1333,15 +1330,21 @@ Private.loss_of_control_types = {
   STUN_MECHANIC = "STUN_MECHANIC",
 }
 
-Private.main_spell_schools = {
-  [1] = GetSchoolString(1),
-  [2] = GetSchoolString(2),
-  [4] = GetSchoolString(4),
-  [8] = GetSchoolString(8),
-  [16] = GetSchoolString(16),
-  [32] = GetSchoolString(32),
-  [64] = GetSchoolString(64),
-}
+Private.main_spell_schools = {}
+
+function Private.InitSpellSchools()
+  local index = 1;
+  while true do
+    local school = _G.CombatLog_String_SchoolString(index)
+    Private.main_spell_schools[index] = school
+
+    if (index > 64) then
+      break
+    end
+
+    index = index * 2
+  end
+end
 
 Private.texture_types = {
   ["Blizzard Alerts"] = {
@@ -1892,7 +1895,7 @@ Private.swing_types = {
   ["off"] = SECONDARYHANDSLOT
 }
 
-if WeakAuras.IsClassic() or WeakAuras.IsBCC() then
+if WeakAuras.IsClassic() or WeakAuras.IsBCC() or WeakAuras.IsWotLK() then
   Private.swing_types["ranged"] = RANGEDSLOT
 end
 
@@ -2122,15 +2125,12 @@ Private.difficulty_types = {
   none = L["None"],
   normal = PLAYER_DIFFICULTY1,
   heroic = PLAYER_DIFFICULTY2,
-  lfr = PLAYER_DIFFICULTY3,
-  flex = PLAYER_DIFFICULTY4,
-  challenge = L["Challenge"]
 }
 
 Private.role_types = {
-  TANK = INLINE_TANK_ICON.." "..TANK,
-  DAMAGER = INLINE_DAMAGER_ICON.." "..DAMAGER,
-  HEALER = INLINE_HEALER_ICON.." "..HEALER
+  TANK = TANK,
+  DAMAGER = DAMAGER,
+  HEALER = HEALER
 }
 
 Private.classification_types = {

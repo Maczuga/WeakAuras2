@@ -253,7 +253,7 @@ local function modifyThumbnail(parent, region, data)
   WeakAuras.SetModel(model, data.model_path, data.model_fileId, data.modelIsUnit, data.modelDisplayInfo)
   model:SetScript("OnShow", function()
     WeakAuras.SetModel(model, data.model_path, data.model_fileId, data.modelIsUnit, data.modelDisplayInfo)
-    model:SetPortraitZoom(data.portraitZoom and 1 or 0)
+    -- model:SetPortraitZoom(data.portraitZoom and 1 or 0)
     if (data.api) then
       model:SetTransform(data.model_st_tx / 1000, data.model_st_ty / 1000, data.model_st_tz / 1000,
         rad(data.model_st_rx), rad(data.model_st_ry), rad(data.model_st_rz),

@@ -31,8 +31,12 @@ function WeakAuras.IsBCC()
   return false
 end
 
-function WeakAuras.IsRetail()
+function WeakAuras.IsWotLK()
   return true
+end
+
+function WeakAuras.IsRetail()
+  return false
 end
 
 function WeakAuras.IsCorrectVersion()

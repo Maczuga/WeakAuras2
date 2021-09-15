@@ -92,7 +92,7 @@ function WeakAuras.UnitExistsFixed(unit, smart)
   if #unit > 9 and unit:sub(1, 9) == "nameplate" then
     return nameplateExists[unit]
   end
-  if smart and IsInRaid() then
+  if smart and WeakAuras.IsInRaid() then
     if unit:sub(1, 5) == "party" or unit == "player" then
       return false
     end
@@ -1428,7 +1428,7 @@ local oldPowerTriggers = {
 do
   local mh = GetInventorySlotInfo("MainHandSlot")
   local oh = GetInventorySlotInfo("SecondaryHandSlot")
-  local ranged = (WeakAuras.IsClassic() or WeakAuras.IsBCC()) and GetInventorySlotInfo("RangedSlot")
+  local ranged = (WeakAuras.IsClassic() or WeakAuras.IsBCC() or WeakAuras.IsWotLK()) and GetInventorySlotInfo("RangedSlot")
 
   local swingTimerFrame;
   local lastSwingMain, lastSwingOff, lastSwingRange;
@@ -1589,7 +1589,7 @@ do
         local currentTime = GetTime();
         local speed = UnitRangedDamage("player");
         if(lastSwingRange) then
-          if WeakAuras.IsClassic() or WeakAuras.IsBCC() then
+          if WeakAuras.IsClassic() or WeakAuras.IsBCC() or WeakAuras.IsWotLK() then
             timer:CancelTimer(rangeTimer, true)
           else
             timer:CancelTimer(mainTimer, true)
@@ -1600,7 +1600,7 @@ do
         end
         lastSwingRange = currentTime;
         swingDurationRange = speed;
-        if WeakAuras.IsClassic() or WeakAuras.IsBCC() then
+        if WeakAuras.IsClassic() or WeakAuras.IsBCC() or WeakAuras.IsWotLK() then
           rangeTimer = timer:ScheduleTimerFixed(swingEnd, speed, "ranged");
         else
           mainTimer = timer:ScheduleTimerFixed(swingEnd, speed, "main");
@@ -1626,7 +1626,7 @@ do
       swingTimerFrame:RegisterEvent("PLAYER_ENTER_COMBAT");
       swingTimerFrame:RegisterEvent("UNIT_ATTACK_SPEED", "player");
       swingTimerFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "player");
-      if WeakAuras.IsClassic() or WeakAuras.IsBCC() then
+      if WeakAuras.IsClassic() or WeakAuras.IsBCC() or WeakAuras.IsWotLK() then
         swingTimerFrame:RegisterEvent("UNIT_SPELLCAST_START", "player")
         swingTimerFrame:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED", "player")
         swingTimerFrame:RegisterEvent("UNIT_SPELLCAST_FAILED", "player")
@@ -1696,7 +1696,7 @@ do
   local function CheckGCD()
     local event;
     local startTime, duration
-    if WeakAuras.IsClassic() or WeakAuras.IsBCC() then
+    if WeakAuras.IsClassic() or WeakAuras.IsBCC() or WeakAuras.IsWotLK() then
       startTime, duration = GetSpellCooldown(29515);
       shootStart, shootDuration = GetSpellCooldown(5019)
     else
@@ -1779,7 +1779,7 @@ do
 
     if duration > 0 then
       if (startTime == gcdStart and duration == gcdDuration)
-          or ((WeakAuras.IsClassic() or WeakAuras.IsBCC()) and duration == shootDuration and startTime == shootStart)
+          or ((WeakAuras.IsClassic() or WeakAuras.IsBCC() or WeakAuras.IsWotLK()) and duration == shootDuration and startTime == shootStart)
       then
         -- GCD cooldown, this could mean that the spell reset!
         if self.expirationTime[id] and self.expirationTime[id] > endTime and self.expirationTime[id] ~= 0 then
@@ -2507,7 +2507,7 @@ function WeakAuras.WatchUnitChange(unit)
     watchUnitChange.unitChangeGUIDS = {}
     watchUnitChange.unitRoles = {}
     watchUnitChange.unitRaidRole = {}
-    watchUnitChange.inRaid = IsInRaid()
+    watchUnitChange.inRaid = WeakAuras.IsInRaid()
     watchUnitChange.nameplateFaction = {}
 
     WeakAuras.frames["Unit Change Frame"] = watchUnitChange;
@@ -2546,7 +2546,7 @@ function WeakAuras.WatchUnitChange(unit)
           end
         end
       else
-        local inRaid = IsInRaid()
+        local inRaid = WeakAuras.IsInRaid()
         local inRaidChanged = inRaid ~= watchUnitChange.inRaid
 
         for unit, guid in pairs(watchUnitChange.unitChangeGUIDS) do
@@ -2559,7 +2559,7 @@ function WeakAuras.WatchUnitChange(unit)
             if inRaidChanged then
               WeakAuras.ScanEvents("UNIT_CHANGED_" .. unit, unit)
             else
-              if WeakAuras.IsClassic() or WeakAuras.IsBCC() then
+              if WeakAuras.IsClassic() or WeakAuras.IsBCC() or WeakAuras.IsWotLK() then
                 local newRaidRole = WeakAuras.UnitRaidRole(unit)
                 if watchUnitChange.unitRaidRole[unit] ~= newRaidRole then
                   watchUnitChange.unitRaidRole[unit] = newRaidRole
@@ -3140,7 +3140,7 @@ do
     if not(tenchFrame) then
       tenchFrame = CreateFrame("Frame");
       tenchFrame:RegisterEvent("UNIT_INVENTORY_CHANGED");
-      if WeakAuras.IsClassic() or WeakAuras.IsBCC() then
+      if WeakAuras.IsClassic() or WeakAuras.IsBCC() or WeakAuras.IsWotLK() then
         tenchFrame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
       end
 
@@ -3917,7 +3917,7 @@ WeakAuras.GetItemSubClassInfo = function(i)
   return select(subClassId, GetAuctionItemSubClasses(classId))
 end
 
-if WeakAuras.IsClassic() or WeakAuras.IsBCC() then
+if WeakAuras.IsClassic() or WeakAuras.IsBCC() or WeakAuras.IsWotLK() then
   WeakAuras.GetCritChance = function()
     return max(GetRangedCritChance(), GetCritChance())
   end
