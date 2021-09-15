@@ -1080,7 +1080,14 @@ local function modify(parent, region, data)
         data.anchorPoint,
         x + data.xOffset, y + data.yOffset
       )
-      controlPoint:SetShown(show and frame ~= WeakAuras.HiddenFrames)
+
+      local shown = show and frame ~= WeakAuras.HiddenFrames;
+      if shown then
+        controlPoint:Show()
+      else
+        controlPoint:Hide()
+      end
+
       controlPoint:SetWidth(regionData.dimensions.width)
       controlPoint:SetHeight(regionData.dimensions.height)
       if self.anchorPerUnit == "UNITFRAME" then
@@ -1196,7 +1203,7 @@ local function modify(parent, region, data)
 
     for index, child in ipairs(self.sortedChildren) do
       if not handledRegionData[child] then
-        child.controlPoint:SetShown(false)
+        child.controlPoint:Hide()
       end
     end
 

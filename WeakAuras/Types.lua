@@ -1123,37 +1123,11 @@ Private.subevent_suffix_types = {
 
 Private.power_types = {
   [0] = MANA,
-  [1] = POWER_TYPE_RED_POWER,
-  [2] = POWER_TYPE_FOCUS,
-  [3] = POWER_TYPE_ENERGY,
-  [4] = COMBAT_TEXT_SHOW_COMBO_POINTS_TEXT,
-  [6] = RUNIC_POWER,
-  [7] = SOUL_SHARDS_POWER,
-  [8] = POWER_TYPE_SUN_POWER,
-  [9] = HOLY_POWER,
-
-  [12] = CHI_POWER,
-  [13] = SHADOW_ORBS,
-  [14] = BURNING_EMBERS,
-  [15] = DEMONIC_FURY,
-}
-
-Private.power_types_with_stagger = {
-  [0] = MANA,
-  [1] = POWER_TYPE_RED_POWER,
-  [2] = POWER_TYPE_FOCUS,
-  [3] = POWER_TYPE_ENERGY,
-  [4] = COMBAT_TEXT_SHOW_COMBO_POINTS_TEXT,
-  [6] = RUNIC_POWER,
-  [7] = SOUL_SHARDS_POWER,
-  [8] = POWER_TYPE_SUN_POWER,
-  [9] = HOLY_POWER,
-
-  [12] = CHI_POWER,
-  [13] = SHADOW_ORBS,
-  [14] = BURNING_EMBERS,
-  [15] = DEMONIC_FURY,
-  [99] = L["Stagger"]
+  [1] = RAGE,
+  [2] = FOCUS,
+  [3] = ENERGY,
+  [4] = HAPPINESS,
+  [6] = RUNIC_POWER
 }
 
 Private.miss_types = {
