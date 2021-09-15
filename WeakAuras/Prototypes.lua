@@ -2404,7 +2404,14 @@ Private.event_prototypes = {
     events = function(trigger)
       local unit = trigger.unit
       local result = {}
-      AddUnitEventForEvents(result, unit, "UNIT_POWER_FREQUENT")
+      AddUnitEventForEvents(result, unit, "UNIT_POWER")
+      AddUnitEventForEvents(result, unit, "UNIT_ENERGY")
+      AddUnitEventForEvents(result, unit, "UNIT_MANA")
+      AddUnitEventForEvents(result, unit, "UNIT_RAGE")
+      AddUnitEventForEvents(result, unit, "UNIT_FOCUS")
+      AddUnitEventForEvents(result, unit, "UNIT_RUNIC_POWER")
+
+      AddUnitEventForEvents(result, unit, "UNIT_POWER_UPDATE")
       AddUnitEventForEvents(result, unit, "UNIT_MAXPOWER")
       AddUnitEventForEvents(result, unit, "UNIT_DISPLAYPOWER")
       AddUnitEventForEvents(result, unit, "UNIT_NAME_UPDATE")
@@ -2415,9 +2422,6 @@ Private.event_prototypes = {
         AddUnitEventForEvents(result, "player", "UNIT_SPELLCAST_STOP")
         AddUnitEventForEvents(result, "player", "UNIT_SPELLCAST_FAILED")
         AddUnitEventForEvents(result, "player", "UNIT_SPELLCAST_SUCCEEDED")
-      end
-      if trigger.use_powertype and trigger.powertype == 99 then
-        AddUnitEventForEvents(result, unit, "UNIT_ABSORB_AMOUNT_CHANGED")
       end
       if trigger.use_ignoreDead or trigger.use_ignoreDisconnected then
         AddUnitEventForEvents(result, unit, "UNIT_FLAGS")
@@ -2720,7 +2724,7 @@ Private.event_prototypes = {
     args = {
       {}, -- timestamp ignored with _ argument
       {}, -- messageType ignored with _ argument (it is checked before the dynamic function)
-      {}, -- hideCaster ignored with _ argument
+      -- {}, -- hideCaster ignored with _ argument
       {
         name = "sourceGUID",
         init = "arg",
@@ -2796,19 +2800,19 @@ Private.event_prototypes = {
           return state and state.show and WeakAuras.CheckCombatLogFlagsObjectType(state.sourceFlags, needle);
         end
       },
-      {
-        name = "sourceRaidFlags",
-        display = L["Source Raid Mark"],
-        type = "select",
-        values = "combatlog_raid_mark_check_type",
-        init = "arg",
-        store = true,
-        test = "WeakAuras.CheckRaidFlags(sourceRaidFlags, %q)",
-        conditionType = "select",
-        conditionTest = function(state, needle)
-          return state and state.show and WeakAuras.CheckRaidFlags(state.sourceRaidFlags, needle);
-        end
-      },
+      -- {
+      --   name = "sourceRaidFlags",
+      --   display = L["Source Raid Mark"],
+      --   type = "select",
+      --   values = "combatlog_raid_mark_check_type",
+      --   init = "arg",
+      --   store = true,
+      --   test = "WeakAuras.CheckRaidFlags(sourceRaidFlags, %q)",
+      --   conditionType = "select",
+      --   conditionTest = function(state, needle)
+      --     return state and state.show and WeakAuras.CheckRaidFlags(state.sourceRaidFlags, needle);
+      --   end
+      -- },
       {
         name = "destGUID",
         init = "arg",
@@ -2906,22 +2910,22 @@ Private.event_prototypes = {
           return (trigger.subeventPrefix == "SPELL" and trigger.subeventSuffix == "_CAST_START");
         end,
       },
-      {
-        name = "destRaidFlags",
-        display = L["Dest Raid Mark"],
-        type = "select",
-        values = "combatlog_raid_mark_check_type",
-        init = "arg",
-        store = true,
-        test = "WeakAuras.CheckRaidFlags(destRaidFlags, %q)",
-        conditionType = "select",
-        conditionTest = function(state, needle)
-          return state and state.show and WeakAuras.CheckRaidFlags(state.destRaidFlags, needle);
-        end,
-        enable = function(trigger)
-          return not (trigger.subeventPrefix == "SPELL" and trigger.subeventSuffix == "_CAST_START");
-        end,
-      },
+      -- {
+      --   name = "destRaidFlags",
+      --   display = L["Dest Raid Mark"],
+      --   type = "select",
+      --   values = "combatlog_raid_mark_check_type",
+      --   init = "arg",
+      --   store = true,
+      --   test = "WeakAuras.CheckRaidFlags(destRaidFlags, %q)",
+      --   conditionType = "select",
+      --   conditionTest = function(state, needle)
+      --     return state and state.show and WeakAuras.CheckRaidFlags(state.destRaidFlags, needle);
+      --   end,
+      --   enable = function(trigger)
+      --     return not (trigger.subeventPrefix == "SPELL" and trigger.subeventSuffix == "_CAST_START");
+      --   end,
+      -- },
       { -- destRaidFlags ignore for SPELL_CAST_START
         enable = function(trigger)
           return (trigger.subeventPrefix == "SPELL" and trigger.subeventSuffix == "_CAST_START");
@@ -3691,90 +3695,6 @@ Private.event_prototypes = {
         init = "arg",
         showExactOption = true,
         test = "spellname == spellName"
-      }
-    },
-    nameFunc = function(trigger)
-      local name = GetSpellInfo(trigger.realSpellName or 0);
-      if(name) then
-        return name;
-      end
-      name = GetSpellInfo(trigger.spellName or 0);
-      if (name) then
-        return name;
-      end
-      return "Invalid";
-    end,
-    iconFunc = function(trigger)
-      local _, _, icon = GetSpellInfo(trigger.realSpellName or 0);
-      if (not icon) then
-        icon = select(3, GetSpellInfo(trigger.spellName or 0));
-      end
-      return icon;
-    end,
-    hasSpellID = true,
-    timedrequired = true
-  },
-  ["Charges Changed"] = {
-    type = "spell",
-    events = {},
-    internal_events = {
-      "SPELL_CHARGES_CHANGED",
-    },
-    name = L["Charges Changed Event"],
-    loadFunc = function(trigger)
-      trigger.spellName = trigger.spellName or 0;
-      local spellName;
-      if (trigger.use_exact_spellName) then
-        spellName = trigger.spellName;
-      else
-        spellName = type(trigger.spellName) == "number" and GetSpellInfo(trigger.spellName) or trigger.spellName;
-      end
-      trigger.realSpellName = spellName; -- Cache
-      WeakAuras.WatchSpellCooldown(spellName);
-    end,
-    init = function(trigger)
-      local spellName;
-      if (trigger.use_exact_spellName) then
-        spellName = trigger.spellName;
-      else
-        spellName = type(trigger.spellName) == "number" and GetSpellInfo(trigger.spellName) or trigger.spellName;
-      end
-      spellName = string.format("%q", spellName or "");
-      return string.format("local spell = %s;\n", spellName);
-    end,
-    statesParameter = "one",
-    args = {
-      {
-        name = "spellName",
-        required = true,
-        display = L["Spell"],
-        type = "spell",
-        init = "arg",
-        showExactOption = true,
-        test = "spell == spellName"
-      },
-      {
-        name = "direction",
-        required = true,
-        display = L["Charge gained/lost"],
-        type = "select",
-        values = "charges_change_type",
-        init = "arg",
-        test = "WeakAuras.CheckChargesDirection(direction, %q)",
-        store = true,
-        conditionType = "select",
-        conditionValues = "charges_change_condition_type";
-        conditionTest = function(state, needle)
-          return state and state.show and WeakAuras.CheckChargesDirection(state.direction, needle)
-        end,
-      },
-      {
-        name = "charges",
-        display = L["Charges"],
-        type = "number",
-        init = "arg",
-        store = true,
-        conditionType = "number"
       }
     },
     nameFunc = function(trigger)

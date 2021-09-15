@@ -1040,7 +1040,6 @@ function Private.Modernize(data)
     local newTypes = {
       ["Cooldown Ready (Spell)"] = "spell",
       ["Queued Action"] = "spell",
-      ["Charges Changed"] = "spell",
       ["Action Usable"] = "spell",
       ["Chat Message"] = "event",
       ["Unit Characteristics"] = "unit",
