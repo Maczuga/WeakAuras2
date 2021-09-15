@@ -124,7 +124,7 @@ local function GetCustomTriggerOptions(data, triggernum)
             elseif trueEvent:match("^UNIT_") then
               local unit = string.lower(i)
               if not OptionsPrivate.Private.baseUnitId[unit] and not OptionsPrivate.Private.multiUnitId[unit] then
-                return "|cFFFF0000"..L["Unit %s is not a valid unit for RegisterUnitEvent"]:format(unit)
+                return "|cFFFF0000"..L["Unit %s is not a valid unit for RegisterEvent"]:format(unit)
               end
             end
           end

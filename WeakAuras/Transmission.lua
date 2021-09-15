@@ -1703,7 +1703,7 @@ Comm:RegisterComm("WeakAurasProg", function(prefix, message, distribution, sende
     local dest, msg = string.match(message, "^§§(.+):(.+)$")
     if dest then
       local dName, dServer = string.match(dest, "^(.*)-(.*)$")
-      local myName, myServer = UnitFullName("player")
+      local myName, myServer = UnitName("player")
       if myName == dName and myServer == dServer then
         message = msg
       else
@@ -1733,7 +1733,7 @@ Comm:RegisterComm("WeakAuras", function(prefix, message, distribution, sender)
     local dest, msg = string.match(message, "^§§([^:]+):(.+)$")
     if dest then
       local dName, dServer = string.match(dest, "^(.*)-(.*)$")
-      local myName, myServer = UnitFullName("player")
+      local myName, myServer = UnitName("player")
       if myName == dName and myServer == dServer then
         message = msg
       else

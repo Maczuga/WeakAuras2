@@ -1085,7 +1085,7 @@ function GenericTrigger.LoadDisplays(toLoad, loadEvent, ...)
         frame.unitFrames[unit].unit = unit
         frame.unitFrames[unit]:SetScript("OnEvent", HandleUnitEvent);
       end
-      Retail.xpcall(frame.unitFrames[unit].RegisterUnitEvent, trueFunction, frame.unitFrames[unit], event, unit)
+      Retail.xpcall(frame.unitFrames[unit].RegisterEvent, trueFunction, frame.unitFrames[unit], event, unit)
       genericTriggerRegisteredUnitEvents[unit] = genericTriggerRegisteredUnitEvents[unit] or {};
       genericTriggerRegisteredUnitEvents[unit][event] = true;
     end
@@ -1265,7 +1265,7 @@ function GenericTrigger.Add(data, region)
           else
             local rawEvents = WeakAuras.split(trigger.events);
             for index, event in pairs(rawEvents) do
-              -- custom events in the form of event:unit1:unit2:unitX are registered with RegisterUnitEvent
+              -- custom events in the form of event:unit1:unit2:unitX are registered with RegisterEvent
               local trueEvent
               local hasParam = false
               local isCLEU = false
@@ -1624,12 +1624,12 @@ do
       swingTimerFrame = CreateFrame("frame");
       swingTimerFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
       swingTimerFrame:RegisterEvent("PLAYER_ENTER_COMBAT");
-      swingTimerFrame:RegisterUnitEvent("UNIT_ATTACK_SPEED", "player");
-      swingTimerFrame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player");
+      swingTimerFrame:RegisterEvent("UNIT_ATTACK_SPEED", "player");
+      swingTimerFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "player");
       if WeakAuras.IsClassic() or WeakAuras.IsBCC() then
-        swingTimerFrame:RegisterUnitEvent("UNIT_SPELLCAST_START", "player")
-        swingTimerFrame:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "player")
-        swingTimerFrame:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", "player")
+        swingTimerFrame:RegisterEvent("UNIT_SPELLCAST_START", "player")
+        swingTimerFrame:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED", "player")
+        swingTimerFrame:RegisterEvent("UNIT_SPELLCAST_FAILED", "player")
       end
       swingTimerFrame:SetScript("OnEvent",
         function(_, event, ...)
@@ -3224,7 +3224,7 @@ do
   function WeakAuras.WatchForPetDeath()
     if not(petFrame) then
       petFrame = CreateFrame("frame");
-      petFrame:RegisterUnitEvent("UNIT_PET", "player")
+      petFrame:RegisterEvent("UNIT_PET", "player")
       petFrame:SetScript("OnEvent", function(event, unit)
         Private.StartProfileSystem("generictrigger")
         WeakAuras.ScanEvents("PET_UPDATE", "pet")
@@ -3304,7 +3304,7 @@ local itemCountWatchFrame;
 function WeakAuras.RegisterItemCountWatch()
   if not(itemCountWatchFrame) then
     itemCountWatchFrame = CreateFrame("frame");
-    itemCountWatchFrame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player");
+    itemCountWatchFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "player");
     itemCountWatchFrame:SetScript("OnEvent", function()
       Private.StartProfileSystem("generictrigger");
       timer:ScheduleTimer(WeakAuras.ScanEvents, 0.2, "ITEM_COUNT_UPDATE");

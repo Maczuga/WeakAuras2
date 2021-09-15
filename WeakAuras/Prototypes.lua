@@ -10,7 +10,7 @@ local ceil, min = ceil, min
 -- WoW APIs
 local GetTalentInfo = GetTalentInfo
 local GetNumSpecializationsForClassID, GetSpecialization = GetNumSpecializationsForClassID, GetSpecialization
-local UnitClass, UnitHealth, UnitHealthMax, UnitName, UnitStagger, UnitPower, UnitPowerMax = UnitClass, UnitHealth, UnitHealthMax, UnitName, UnitStagger, UnitPower, UnitPowerMax
+local UnitClass, UnitHealth, UnitHealthMax, UnitName, UnitPower, UnitPowerMax = UnitClass, UnitHealth, UnitHealthMax, UnitName, UnitPower, UnitPowerMax
 local GetSpellInfo, GetItemInfo, GetItemCount, GetItemIcon = GetSpellInfo, GetItemInfo, GetItemCount, GetItemIcon
 local GetShapeshiftFormInfo, GetShapeshiftForm = GetShapeshiftFormInfo, GetShapeshiftForm
 local GetRuneCooldown, UnitCastingInfo, UnitChannelInfo = GetRuneCooldown, UnitCastingInfo, UnitChannelInfo
@@ -634,6 +634,25 @@ Private.anim_presets = {
     translateType = "bounce"
   }
 };
+
+local classIDs = {
+	[1] = { LOCALIZED_CLASS_NAMES_MALE["WARRIOR"] , "WARRIOR" },
+	[2] = { LOCALIZED_CLASS_NAMES_MALE["PALADIN"] , "PALADIN" },
+	[3] = { LOCALIZED_CLASS_NAMES_MALE["HUNTER"] , "HUNTER" },
+	[4] = { LOCALIZED_CLASS_NAMES_MALE["ROGUE"] , "ROGUE" },
+	[5] = { LOCALIZED_CLASS_NAMES_MALE["PRIEST"] , "PRIEST" },
+	[6] = { LOCALIZED_CLASS_NAMES_MALE["DEATHKNIGHT"] , "DEATHKNIGHT" },
+	[7] = { LOCALIZED_CLASS_NAMES_MALE["SHAMAN"] , "SHAMAN" },
+	[8] = { LOCALIZED_CLASS_NAMES_MALE["MAGE"] , "MAGE" },
+	[9] = { LOCALIZED_CLASS_NAMES_MALE["WARLOCK"] , "WARLOCK" },
+	[10] = { LOCALIZED_CLASS_NAMES_MALE["DRUID"] , "DRUID" },
+}
+
+local function GetClassInfo(id)
+	local t = classIDs[id]
+	if not t then return end
+	return unpack(t)
+end
 
 WeakAuras.class_ids = {}
 local classID = 1;
@@ -2231,22 +2250,6 @@ Private.event_prototypes = {
 
       ret = ret .. unitHelperFunctions.SpecificUnitCheck(trigger)
 
-      if (trigger.use_powertype and trigger.powertype == 99 and WeakAuras.IsRetail()) then
-        ret = ret ..[[
-          local UnitPower = WeakAuras.UnitStagger
-        ]]
-        if (trigger.use_scaleStagger and trigger.scaleStagger) then
-          ret = ret .. string.format([[
-            local UnitPowerMax = function(unit)
-              return UnitHealthMax(unit) * %s
-            end
-          ]], trigger.scaleStagger)
-        else
-          ret = ret .. [[
-            local UnitPowerMax = UnitHealthMax;
-          ]]
-        end
-      end
       local canEnableShowCost = (not trigger.use_powertype or trigger.powertype ~= 99) and trigger.unit == "player";
       if (canEnableShowCost and trigger.use_showCost) then
         ret = ret .. [[
@@ -8115,7 +8118,7 @@ function WeakAuras.FillSpellKnownSpellBook()
   for spellBookID = 1, max do
     local type, baseSpellID = GetSpellBookItemInfo(spellBookID, BOOKTYPE_SPELL)
     if type == "SPELL" or type == "PETACTION" then
-      local name = GetSpellBookItemName(spellBookID, BOOKTYPE_SPELL)
+      local name = GetSpellName(spellBookID, BOOKTYPE_SPELL)
 
       local spellName = GetSpellInfo(baseSpellID)
 

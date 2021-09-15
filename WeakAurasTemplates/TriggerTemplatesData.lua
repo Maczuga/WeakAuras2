@@ -37,17 +37,8 @@ local powerTypes =
     [1] = { name = POWER_TYPE_RED_POWER, icon = "Interface\\Icons\\spell_misc_emotionangry"},
     [2] = { name = POWER_TYPE_FOCUS, icon = "Interface\\Icons\\ability_hunter_focusfire"},
     [3] = { name = POWER_TYPE_ENERGY, icon = "Interface\\Icons\\spell_shadow_shadowworddominate"},
-    [4] = { name = COMBAT_TEXT_SHOW_COMBO_POINTS_TEXT, icon = "Interface\\Icons\\inv_mace_2h_pvp410_c_01"},
+    [4] = { name = "Happiness", icon = "Interface\\Icons\\inv_mace_2h_pvp410_c_01"},
     [6] = { name = RUNIC_POWER, icon = "Interface\\Icons\\inv_sword_62"},
-    [7] = { name = SOUL_SHARDS_POWER, icon = "Interface\\Icons\\inv_misc_gem_amethyst_02"},
-    [8] = { name = POWER_TYPE_SUN_POWER, icon = "Interface\\Icons\\ability_druid_eclipseorange"},
-    [9] = { name = HOLY_POWER, icon = "Interface\\Icons\\achievement_bg_winsoa"},
-
-    [12] = {name = CHI_POWER, icon = "Interface\\Icons\\ability_monk_healthsphere"},
-    [13] = {name = SHADOW_ORBS, icon = "Interface\\Icons\\spell_priest_shadoworbs"},
-    [14] = {name = BURNING_EMBERS, icon = "Interface\\Icons\\ability_warlock_burningembers"},
-    [15] = {name = DEMONIC_FURY, icon = "Interface\\Icons\\Ability_Warlock_Eradication"},
-    [99] = {name = L["Stagger"], icon = "Interface\\Icons\\monk_stance_drunkenox"}
   }
 
 -- Collected by WeakAurasTemplateCollector:

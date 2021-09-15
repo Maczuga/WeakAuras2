@@ -746,7 +746,7 @@ local function CreateTalentCache()
   for tier = 1, MAX_NUM_TALENT_TIERS do
     for column = 1, NUM_TALENT_COLUMNS do
       -- Get name and icon info for the current talent of the current class and save it
-      local talentName, talentIcon = WeakAuras.GetMoPTalentInfo(tier, column)
+      local talentName, talentIcon = GetTalentInfo(tier, column);
       local talentId = (tier-1)*3+column
       -- Get the icon and name from the talent cache and record it in the table that will be used by WeakAurasOptions
       if (talentName and talentIcon) then
@@ -1507,10 +1507,10 @@ local unitLoadFrame = CreateFrame("FRAME");
 WeakAuras.unitLoadFrame = unitLoadFrame;
 WeakAuras.frames["Display Load Handling 2"] = unitLoadFrame;
 
-unitLoadFrame:RegisterUnitEvent("UNIT_FLAGS", "player");
+unitLoadFrame:RegisterEvent("UNIT_FLAGS", "player");
 if WeakAuras.IsRetail() then
-  unitLoadFrame:RegisterUnitEvent("UNIT_ENTERED_VEHICLE", "player");
-  unitLoadFrame:RegisterUnitEvent("UNIT_EXITED_VEHICLE", "player");
+  unitLoadFrame:RegisterEvent("UNIT_ENTERED_VEHICLE", "player");
+  unitLoadFrame:RegisterEvent("UNIT_EXITED_VEHICLE", "player");
 end
 
 function Private.RegisterLoadEvents()
@@ -5109,10 +5109,10 @@ do
 end
 
 do
-  local ownRealm = select(2, UnitFullName("player"))
+  local ownRealm = select(2, UnitName("player"))
   function WeakAuras.UnitNameWithRealm(unit)
-    ownRealm = ownRealm or select(2, UnitFullName("player"))
-    local name, realm = UnitFullName(unit)
+    ownRealm = ownRealm or select(2, UnitName("player"))
+    local name, realm = UnitName(unit)
     return name or "", realm or ownRealm or ""
   end
 end
@@ -5224,10 +5224,6 @@ function WeakAuras.GetTriggerCategoryFor(triggerType)
   return prototype and prototype.type
 end
 
-function WeakAuras.UnitStagger(unit)
-  return UnitStagger(unit) or 0
-end
-
 do
   local function shouldInclude(data, includeGroups, includeLeafs)
     if data.controlledChildren then
@@ -5323,11 +5319,6 @@ function WeakAuras.ExtractSpellId(spellName)
   end
 
   return nil;
-end
-
-function WeakAuras.GetMoPTalentInfo(tier, column)
-  local talentId = (tier-1)*3+column;
-  return GetTalentInfo(talentId);
 end
 
 function WeakAuras.GetSpecializationId()

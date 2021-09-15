@@ -1,4 +1,4 @@
- local lib = LibStub and LibStub("LibRetail", true)
+local lib = LibStub and LibStub("LibRetail", true)
 if not lib then return end
 
 -- Backport variables

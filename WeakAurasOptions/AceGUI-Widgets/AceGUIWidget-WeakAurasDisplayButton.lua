@@ -475,7 +475,7 @@ local methods = {
         local editbox = GetCurrentKeyBoardFocus();
         if(editbox) then
           if (not fullName) then
-            local name, realm = UnitFullName("player")
+            local name, realm = UnitName("player")
             if realm then
               fullName = name.."-".. ObfuscateName(realm)
             else

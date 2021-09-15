@@ -14,9 +14,9 @@ License: Public Domain
 -- A callback is provided for those interested in checker changes.
 -- @usage
 -- local rc = LibStub("LibRangeCheck-2.0")
--- 
+--
 -- rc.RegisterCallback(self, rc.CHECKERS_CHANGED, function() print("need to refresh my stored checkers") end)
--- 
+--
 -- local minRange, maxRange = rc:GetRange('target')
 -- if not minRange then
 --     print("cannot get range estimate for target")
@@ -25,7 +25,7 @@ License: Public Domain
 -- else
 --     print("target is between " .. minRange .. " and " .. maxRange .. " yards")
 -- end
--- 
+--
 -- local meleeChecker = rc:GetFriendMaxChecker(rc.MeleeRange) -- 5 yds
 -- for i = 1, 4 do
 --     -- TODO: check if unit is valid, etc
@@ -78,7 +78,7 @@ local MeleeRange = 5
 
 -- list of friendly spells that have different ranges
 local FriendSpells = {}
--- list of harmful spells that have different ranges 
+-- list of harmful spells that have different ranges
 local HarmSpells = {}
 
 FriendSpells["DRUID"] = {
@@ -129,7 +129,7 @@ HarmSpells["PALADIN"] = {
     20271, -- ["Judgement"], -- 10 (Improved Judgement: +10, +20; Enlightened Judgements: +5, +10)
     853, -- ["Hammer of Justice"], -- 10 (Glyph of Hammer of Justice: +5)
     35395, -- ["Crusader Strike"], -- 5
-} 
+}
 
 FriendSpells["PRIEST"] = {
     2061, -- ["Flash Heal"], -- 40
@@ -341,7 +341,7 @@ local tinsert = tinsert
 local tremove = tremove
 local BOOKTYPE_SPELL = BOOKTYPE_SPELL
 local GetSpellInfo = GetSpellInfo
-local GetSpellBookItemName = GetSpellBookItemName
+local GetSpellName = GetSpellName
 local GetNumSpellTabs = GetNumSpellTabs
 local GetSpellTabInfo = GetSpellTabInfo
 local GetItemInfo = GetItemInfo
@@ -448,7 +448,7 @@ end
 -- return the spellIndex of the given spell by scanning the spellbook
 local function findSpellIdx(spellName)
     for i = 1, getNumSpells() do
-        local spell, rank = GetSpellBookItemName(i, BOOKTYPE_SPELL)
+        local spell, rank = GetSpellName(i, BOOKTYPE_SPELL)
         if spell == spellName then return i end
     end
     return nil
@@ -493,7 +493,7 @@ local function createCheckerList(spellList, itemList, interactList)
             end
         end
     end
-    
+
     if itemList then
         for range, items in pairs(itemList) do
             for i = 1, #items do
@@ -505,7 +505,7 @@ local function createCheckerList(spellList, itemList, interactList)
             end
         end
     end
-    
+
     if interactList and not next(res) then
         for index, range in pairs(interactList) do
             addChecker(res, range, nil,  checkers_Interact[index])
@@ -642,7 +642,7 @@ lib.failedItemRequests = {}
 
 -- << Public API
 
- 
+
 
 --- The callback name that is fired when checkers are changed.
 -- @field
@@ -940,7 +940,7 @@ function lib:processItemRequests(itemRequests)
                     itemRequests[range] = nil
                     break
                 end
-                tremove(items, i)   
+                tremove(items, i)
             elseif not itemRequestTimeoutAt then
                 itemRequestTimeoutAt = GetTime() + ItemRequestTimeout
                 return true
@@ -985,9 +985,9 @@ function lib:scheduleInit()
     self.frame:Show()
 end
 
- 
 
--- << load-time initialization 
+
+-- << load-time initialization
 
 function lib:activate()
     if not self.frame then

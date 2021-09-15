@@ -1690,7 +1690,7 @@ frame:RegisterEvent("UNIT_FACTION")
 frame:RegisterEvent("UNIT_NAME_UPDATE")
 frame:RegisterEvent("UNIT_FLAGS")
 frame:RegisterEvent("PLAYER_FLAGS_CHANGED")
-frame:RegisterUnitEvent("UNIT_PET", "player")
+frame:RegisterEvent("UNIT_PET", "player")
 -- if not WeakAuras.IsClassic() then
   frame:RegisterEvent("PLAYER_FOCUS_CHANGED")
   if WeakAuras.IsRetail() then
