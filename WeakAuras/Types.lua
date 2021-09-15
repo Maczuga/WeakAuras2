@@ -1127,7 +1127,8 @@ Private.power_types = {
   [2] = FOCUS,
   [3] = ENERGY,
   [4] = HAPPINESS,
-  [6] = RUNIC_POWER
+  [6] = RUNIC_POWER,
+  [99] = L["Combo Points"],
 }
 
 Private.miss_types = {

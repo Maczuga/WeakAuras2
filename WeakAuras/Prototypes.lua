@@ -2402,6 +2402,7 @@ Private.event_prototypes = {
       AddUnitEventForEvents(result, unit, "UNIT_RAGE")
       AddUnitEventForEvents(result, unit, "UNIT_FOCUS")
       AddUnitEventForEvents(result, unit, "UNIT_RUNIC_POWER")
+      AddUnitEventForEvents(result, unit, "UNIT_COMBO_POINTS")
 
       AddUnitEventForEvents(result, unit, "UNIT_POWER_FREQUENT")
       AddUnitEventForEvents(result, unit, "UNIT_DISPLAYPOWER")
@@ -2512,20 +2513,10 @@ Private.event_prototypes = {
         reloadOptions = true
       },
       {
-        name = "scaleStagger",
-        display = L["Stagger Scale"],
-        type = "string",
-        validate = WeakAuras.ValidateNumeric,
-        enable = function(trigger)
-          return trigger.use_powertype and trigger.powertype == 99
-        end,
-        test = "true"
-      },
-      {
         name = "power",
         display = L["Power"],
         type = "number",
-        init = "powerType == 4 and GetComboPoints(unit, unit .. '-target') or UnitPower(unit, powerType)"
+        init = "powerType == 99 and GetComboPoints(unit, unit .. '-target') or UnitPower(unit, powerType)"
                                      or "UnitPower(unit, powerType) / WeakAuras.UnitPowerDisplayMod(powerTypeToCheck)",
         store = true,
         conditionType = "number",
@@ -2540,7 +2531,7 @@ Private.event_prototypes = {
       {
         name = "total",
         hidden = true,
-        init = "powerType == 4 and (math.max(1, UnitPowerMax(unit, 14))) or math.max(1, UnitPowerMax(unit, powerType))"
+        init = "powerType == 99 and (math.max(1, UnitPowerMax(unit, 14))) or math.max(1, UnitPowerMax(unit, powerType))"
                                       or "math.max(1, UnitPowerMax(unit, powerType)) / WeakAuras.UnitPowerDisplayMod(powerTypeToCheck)",
         store = true,
         test = "true"
