@@ -5,7 +5,6 @@ local waitTable = {};
 local waitFrame = nil;
 
 function lib.After (delay, func, ...)
-  -- print("dupa")
   if(type(delay)~="number" or type(func)~="function") then
     return false;
   end
