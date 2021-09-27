@@ -1639,7 +1639,7 @@ local function EventHandler(frame, event, arg1, arg2, ...)
         tinsert(unitsToRemove, unit)
       end
     end
-  elseif event == "GROUP_ROSTER_UPDATE" then
+  elseif event == "PARTY_MEMBERS_CHANGED" or event == "RAID_ROSTER_UPDATE" then
     unitVisible = {}
     local unitsToCheck = {}
     for unit in GetAllUnits("group", true) do
@@ -1649,13 +1649,13 @@ local function EventHandler(frame, event, arg1, arg2, ...)
       end
     end
   elseif event == "UNIT_FLAGS" or event == "UNIT_NAME_UPDATE" or event == "PLAYER_FLAGS_CHANGED"
-      or event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE"
+      -- or event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE"
   then
-    if event == "PARTY_MEMBER_ENABLE" then
-      unitVisible[arg1] = true
-    elseif event == "PARTY_MEMBER_DISABLE" then
-      unitVisible[arg1] = false
-    end
+    -- if event == "PARTY_MEMBER_ENABLE" then
+    --   unitVisible[arg1] = true
+    -- elseif event == "PARTY_MEMBER_DISABLE" then
+    --   unitVisible[arg1] = False
+    -- end
     if Private.multiUnitUnits.group[arg1] then
       RecheckActiveForUnitType("group", arg1, deactivatedTriggerInfos)
     end
@@ -1709,7 +1709,8 @@ frame:RegisterEvent("ENCOUNTER_END")
 frame:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT")
 -- frame:RegisterEvent("NAME_PLATE_UNIT_ADDED")
 -- frame:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
-frame:RegisterEvent("GROUP_ROSTER_UPDATE")
+frame:RegisterEvent("PARTY_MEMBERS_CHANGED");
+frame:RegisterEvent("RAID_ROSTER_UPDATE");
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:RegisterEvent("PARTY_MEMBER_DISABLE")
 frame:RegisterEvent("PARTY_MEMBER_ENABLE")

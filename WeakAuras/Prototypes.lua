@@ -1206,7 +1206,7 @@ Private.load_prototype = {
       width = WeakAuras.normalWidth,
       init = "arg",
       values = "group_types",
-      events = {"GROUP_ROSTER_UPDATE"}
+      events = {"PARTY_MEMBERS_CHANGED", "RAID_ROSTER_UPDATE"}
     },
     {
       name = "player",
@@ -7409,7 +7409,8 @@ Private.event_prototypes = {
         tinsert(pet_unit_events, "UNIT_HEALTH")
       end
       if trigger.use_ingroup ~= nil then
-        tinsert(events, "GROUP_ROSTER_UPDATE")
+        tinsert(events, "PARTY_MEMBERS_CHANGED")
+        tinsert(events, "RAID_ROSTER_UPDATE")
       end
 
       if trigger.use_instance_size ~= nil then

@@ -1,7 +1,7 @@
 --[[-----------------------------------------------------------------------------
 ColorPicker Widget
 -------------------------------------------------------------------------------]]
-local Type, Version = "ColorPicker-ElvUI", 25
+local Type, Version = "ColorPicker", 24
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
@@ -13,16 +13,12 @@ local CreateFrame, UIParent = CreateFrame, UIParent
 
 -- Global vars/functions that we don't upvalue since they might get hooked, or upgraded
 -- List them here for Mikk's FindGlobals script
--- GLOBALS: ColorPickerFrame, OpacitySliderFrame, ColorPPDefault
+-- GLOBALS: ShowUIPanel, HideUIPanel, ColorPickerFrame, OpacitySliderFrame
 
 --[[-----------------------------------------------------------------------------
 Support functions
 -------------------------------------------------------------------------------]]
 local function ColorCallback(self, r, g, b, a, isAlpha)
-	-- this will block an infinite loop from `E.GrabColorPickerValues`
-	-- which is caused when we set values into the color picker again on `OnValueChanged`
-	if ColorPickerFrame.noColorCallback then return end
-
 	if not self.HasAlpha then
 		a = 1
 	end
@@ -51,7 +47,7 @@ local function Control_OnLeave(frame)
 end
 
 local function ColorSwatch_OnClick(frame)
-	ColorPickerFrame:Hide()
+	HideUIPanel(ColorPickerFrame)
 	local self = frame.obj
 	if not self.disabled then
 		ColorPickerFrame:SetFrameStrata("FULLSCREEN_DIALOG")
@@ -77,18 +73,11 @@ local function ColorSwatch_OnClick(frame)
 		end
 		ColorPickerFrame:SetColorRGB(r, g, b)
 
-		if ColorPPDefault and self.dR and self.dG and self.dB then
-			local alpha = 1
-			if self.dA then alpha = 1 - self.dA end
-			if not ColorPPDefault.colors then ColorPPDefault.colors = {} end
-			ColorPPDefault.colors.r, ColorPPDefault.colors.g, ColorPPDefault.colors.b, ColorPPDefault.colors.a = self.dR, self.dG, self.dB, alpha
-		end
-
 		ColorPickerFrame.cancelFunc = function()
 			ColorCallback(self, r, g, b, a, true)
 		end
 
-		ColorPickerFrame:Show()
+		ShowUIPanel(ColorPickerFrame)
 	end
 	AceGUI:ClearFocus()
 end
@@ -112,15 +101,11 @@ local methods = {
 		self.text:SetText(text)
 	end,
 
-	["SetColor"] = function(self, r, g, b, a, defaultR, defaultG, defaultB, defaultA)
+	["SetColor"] = function(self, r, g, b, a)
 		self.r = r
 		self.g = g
 		self.b = b
 		self.a = a or 1
-		self.dR = defaultR or self.dR
-		self.dG = defaultG or self.dG
-		self.dB = defaultB or self.dB
-		self.dA = defaultA or self.dA
 		self.colorSwatch:SetVertexColor(r, g, b, a)
 	end,
 

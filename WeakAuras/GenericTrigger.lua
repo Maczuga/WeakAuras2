@@ -2519,7 +2519,8 @@ function WeakAuras.WatchUnitChange(unit)
     end
     watchUnitChange:RegisterEvent("UNIT_TARGET");
     watchUnitChange:RegisterEvent("INSTANCE_ENCOUNTER_ENGAGE_UNIT");
-    watchUnitChange:RegisterEvent("GROUP_ROSTER_UPDATE");
+    watchUnitChange:RegisterEvent("PARTY_MEMBERS_CHANGED");
+    watchUnitChange:RegisterEvent("RAID_ROSTER_UPDATE");
     -- watchUnitChange:RegisterEvent("NAME_PLATE_UNIT_ADDED")
     -- watchUnitChange:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
     watchUnitChange:RegisterEvent("UNIT_FACTION")

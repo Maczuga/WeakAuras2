@@ -1483,7 +1483,8 @@ if WeakAuras.IsRetail() then
 else
   loadFrame:RegisterEvent("CHARACTER_POINTS_CHANGED")
 end
-loadFrame:RegisterEvent("GROUP_ROSTER_UPDATE");
+loadFrame:RegisterEvent("PARTY_MEMBERS_CHANGED");
+loadFrame:RegisterEvent("RAID_ROSTER_UPDATE");
 loadFrame:RegisterEvent("ZONE_CHANGED");
 loadFrame:RegisterEvent("ZONE_CHANGED_INDOORS");
 loadFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA");
