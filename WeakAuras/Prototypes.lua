@@ -2203,6 +2203,11 @@ Private.event_prototypes = {
         AddUnitEventForEvents(result, unit, "UNIT_FLAGS")
       end
 
+      if trigger.powertype == 4 then
+        AddUnitEventForEvents(result, unit, "UNIT_TARGET")
+        AddUnitEventForEvents(result, unit, "UNIT_COMBO_POINTS")
+      end
+
       return result;
     end,
     internal_events = function(trigger)
