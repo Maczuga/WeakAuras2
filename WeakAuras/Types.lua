@@ -15,7 +15,7 @@ local wipe, tinsert = wipe, tinsert
 local GetNumShapeshiftForms, GetShapeshiftFormInfo = GetNumShapeshiftForms, GetShapeshiftFormInfo
 local GetNumSpecializationsForClassID, GetSpecializationInfoForClassID = GetNumSpecializationsForClassID, GetSpecializationInfoForClassID
 
-local function CustomWrapTextInColorCodeFnloader(text, hexColor)
+local function CustomWrapTextInColorCode(text, hexColor)
 	return string.format("|c" .. hexColor .. text .. "|r")
 end
 
