@@ -14,7 +14,20 @@ local Retail = LibStub("LibRetail")
 local wipe, tinsert = wipe, tinsert
 local GetNumShapeshiftForms, GetShapeshiftFormInfo = GetNumShapeshiftForms, GetShapeshiftFormInfo
 local GetNumSpecializationsForClassID, GetSpecializationInfoForClassID = GetNumSpecializationsForClassID, GetSpecializationInfoForClassID
-local WrapTextInColorCode = WrapTextInColorCode
+
+local function CustomWrapTextInColorCode(text, hexColor)
+	return string.format("|c" .. hexColor .. text .. "|r")
+end
+
+local function WrapTextInColorCodeFnloader()
+	local ver = tonumber(select(4, GetBuildInfo()))
+	if ver >= 701000 then return WrapTextInColorCode end
+	
+	return CustomWrapTextInColorCode
+end
+
+local WrapTextInColorCode = WrapTextInColorCodeFnLoader()
+
 local MAX_NUM_TALENTS = MAX_NUM_TALENTS or 20
 
 local function WA_GetClassColor(classFilename)
