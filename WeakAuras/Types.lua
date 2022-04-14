@@ -19,7 +19,7 @@ local function CustomWrapTextInColorCode(text, hexColor)
 	return string.format("|c" .. hexColor .. text .. "|r")
 end
 
-local function WrapTextInColorCodeFnloader()
+local function WrapTextInColorCodeFnLoader()
 	local ver = tonumber(select(4, GetBuildInfo()))
 	if ver >= 701000 then return WrapTextInColorCode end
 	
